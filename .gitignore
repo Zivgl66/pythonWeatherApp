@@ -3,5 +3,8 @@
 !.gitignore
 !.myfuncs
 !bash
+!devops
+!c
+!python
 
 
