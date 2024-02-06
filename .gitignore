@@ -2,6 +2,10 @@
 !*.md
 !.gitignore
 !.myfuncs
+!*.c
+!*.sh
+!*.exe
+!*.EOF
 !git/c
 !c
 !bash
