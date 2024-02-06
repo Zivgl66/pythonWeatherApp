@@ -3,6 +3,7 @@
 !.gitignore
 !.myfuncs
 !git/c
-
-
-
+!c
+!bash
+!devops
+!python
