@@ -2,12 +2,7 @@
 !*.md
 !.gitignore
 !.myfuncs
-!*.c
-!*.sh
-!*.exe
-!bash
-!devops
-!c
-!python
+!git/c
+
 
 
