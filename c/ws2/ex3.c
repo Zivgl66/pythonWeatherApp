@@ -18,7 +18,10 @@ printf("%p\n" , (void *)&s_i);
 printf("%p\n" , (void *)&i);
 printf("ptr: %p\n" , (void *)ptr);
 printf("ad ptr: %p\n", (void *)&ptr);
+
 printf("ptr2: %p\n" , (void *)ptr2);
+printf("ptr2: %p\n" , (void *)&ptr2);
+
 printf("ptr3: %p\n" , (void *)ptr3);
 
 
