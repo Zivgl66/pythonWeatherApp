@@ -7,7 +7,7 @@
 if [ -t 1 ]
 then
     # standard output is a TTY
-    bind -x '"\C-r"':reset
+    bind -x '"^[[21;5~":"/home/ziv/git/bash/ws1/8changeklayout.sh"'
 fi
 
 
