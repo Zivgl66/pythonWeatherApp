@@ -5,8 +5,8 @@ int StrCmp(char *str1, char *str2);
 
 int main()
 {
-char a[6]="HELLO";
-char b[12]="HELLO WORLD";
+char a[6]="HELL";
+char b[12]="HELLO";
 char c[8]="Hellooo";
 char d[6]="HeLlo";
 printf("the length of the string is: %lu\n", StrLen(a));
@@ -46,7 +46,7 @@ while(*str1)
 }
 if(*str2 != '\0')
 	{
-	return 1;
+	return -1;
 	}
 else
 	{
