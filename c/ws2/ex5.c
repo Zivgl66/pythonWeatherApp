@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
-size_t StrLen(char *str);
-int StrCmp(char *str1, char *str2);
+size_t StrLen(const char *str);
+int StrCmp(const char *str1,const char *str2);
 
 int main()
 {
@@ -16,18 +16,18 @@ printf("strcmp(c, d) = %d\n", StrCmp(c,d));
 return(0);
 }
 
-size_t StrLen(char *str)
+size_t StrLen(const char *str)
 {
-size_t length = 0;
-assert(*str);
-while(*str++)
-{
-	length++;
-}
-return length;
+	size_t length = 0;
+	assert(*str);
+	while(*str++)
+	{
+		length++;
+	}
+	return length * sizeof(char);
 }
 
-int StrCmp(char *str1, char *str2)
+int StrCmp(const char *str1,const char *str2)
 {
 assert(*str1);
 assert(*str2);
