@@ -221,7 +221,7 @@ State RemoveFile(const char *filename)
 State CountFileLines(const char *filename)
 {
 	FILE *fp;
-	int counter = 0;
+	int counter = 1;
 	char c;
 	fp = fopen(filename, "r");
 	if(fp == NULL)
@@ -236,9 +236,9 @@ State CountFileLines(const char *filename)
 		{ 
         		counter++;
 		}
+
 	}
 	fclose(fp);
-/*	printf("The File", "%s",KGRN,"%s",filename,"%s",KNRM," has", "%s",KRED," %d", counter, "%s",KNRM, " lines\n");*/
 	printf("The file ");
 	printf("%s", KGRN);
 	printf("%s", filename);
