@@ -1,4 +1,6 @@
 *
+*.o
+*.exe
 !*.md
 !.gitignore
 !.myfuncs
