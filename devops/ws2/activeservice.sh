@@ -13,14 +13,9 @@ if  $running; then
 	do
 		case $option in
 			"Start")
-				if [[ $running ]]; then
-					sudo systemctl restart $service_name
-				else
-					sudo systemctl start $service_name
-				fi;;
+				sudo systemctl restart $service_name
 			"Stop")
 				sudo systemctl --no-block stop $service_name
-				systemctl is-active $service_name;;
 			"Check")
 				sudo systemctl is-active $service_name;;
 			"Leave")
