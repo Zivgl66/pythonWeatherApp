@@ -69,8 +69,7 @@ def rotateListLeft(my_list):
 def removeAndPrintEverySecond(lis):
     count = 1
     while (len(lis) > 0):
-        print(lis[count]) if len(lis) > count else print(lis[0])
-        lis.pop(count) if len(lis) > count else lis.pop(0)
+        print(lis.pop(count)) if len(lis) > count else print(lis.pop(0))
         if len(lis) > count:
             count += 1
         else:
