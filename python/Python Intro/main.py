@@ -1,3 +1,6 @@
+def countCharInStr(string, char)
+    return string.count(char)
+
 def flipNum(num):
     new_num = 0
     while (num > 0):
@@ -23,10 +26,8 @@ def checkLength(password):
 
 
 def containLatinAlph(password):
-    for i in password:
-        if i in "abcdefghijklmnopqrstuvwxyz" or i in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-            return True
-    return False
+    return any(i.islower() for char in password) and any(i.isupper() for char in password)
+
 
 
 def containSpecialChar(password):
