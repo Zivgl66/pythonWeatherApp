@@ -29,6 +29,38 @@ print(new_list_of_nums)
 print("-----------------------------------------------")
 
 # exercise 5:
+dict_products = {"Chair": 20, "Table": 50, "Counter": 100, "Lamp": 25}
+dict_sale = {key: value*0.9 for (key, value) in dict_products.items()}
+print("sale dict: ", dict_sale)
+
+print("-----------------------------------------------")
+
+# exercise 6:
+def gemetria_sum(string):
+    gematria_dict = {'א': 1, 'ב': 2, 'ג': 3, 'ד': 4, 'ה': 5, 'ו': 6, 'ז': 7, 'ח': 8, 'ט': 9, 'י': 10,
+                     'כ': 20, 'ל': 30, 'מ': 40, 'נ': 50, 'ס': 60, 'ע': 70, 'פ': 80,
+                     'צ': 90, 'ק': 100, 'ר': 200, 'ש': 300, 'ת': 400, 'ך': 500, 'ם': 600,
+                     'ן': 700, 'ף': 800, 'ץ': 900}
+    sum_of = 0
+    for ch in string:
+        sum_of += gematria_dict.get(ch)
+    return sum_of
+
+
+print(gemetria_sum("שלום"))
+
+print("-----------------------------------------------")
+
+# exercise 7:
+def cred_validate(credit_card):
+    list_cred = list(map(lambda x: x - 9 if(x > 9) else x, (map(lambda x: int(x) * 2, credit_card[-2::-2]))))
+    return ((reduce(lambda x, y: x+y, list_cred)) + (reduce(lambda x, y: int(x) + int(y), list(credit_card)[::2]))) % 10 == 0
+
+
+print(cred_validate("79927398713"))
+
+print("-----------------------------------------------")
+
 
 
 

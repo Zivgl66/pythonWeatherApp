@@ -1,38 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="21ff0771-4d1d-40c3-a9f4-2225529b0572" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../Python Intro/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Python Intro/.idea/Python Intro.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Python Intro/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Python Intro/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Python Intro/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Python Intro/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Python Intro/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../Python Intro/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data-structures/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data-structures/.idea/data-structures.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data-structures/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data-structures/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data-structures/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data-structures/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../data-structures/main.py" beforeDir="false" />
-    </list>
+    <list default="true" id="21ff0771-4d1d-40c3-a9f4-2225529b0572" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
-  </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2dGLLde8xMJVgAAX04EqfC5joYS" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -41,7 +19,7 @@
   "keyToString": {
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "/home/ziv/git/python/Python_ScopesAndModules"
+    "last_opened_file_path": "/home/ziv/git/python/Python3_Functions"
   }
 }]]></component>
   <component name="RunManager">
