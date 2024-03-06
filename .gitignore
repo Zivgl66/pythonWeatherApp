@@ -1,6 +1,7 @@
 *
 *.o
 *.exe
+*.csv
 !*.md
 !.gitignore
 !.myfuncs
