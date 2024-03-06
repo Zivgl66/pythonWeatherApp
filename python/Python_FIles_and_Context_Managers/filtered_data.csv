@@ -1,0 +1,6 @@
+gender,Age,Ventilated,Time_between_positive_and_hospitalization,Length_of_hospitalization,Time_between_positive_and_recovery,Is_vaccinated
+M,28,1,1,14,16,N
+M,16,1,17,43,60,N
+M,28,1,7,7,14,N
+M,28,1,2,4,6,N
+M,26,1,238,52,291,N
