@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8d0b6457-d2f6-42fe-9756-f636cc813bef" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Python3_Functions/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Python3_Functions/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Python_FIles_and_Context_Managers/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Python_FIles_and_Context_Managers/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Python_ScopesAndModules/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/Python_ScopesAndModules/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data_structures/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_structures/main.py" afterDir="false" />
-    </list>
+    <list default="true" id="8d0b6457-d2f6-42fe-9756-f636cc813bef" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,13 +19,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/ziv/git/python&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "/home/ziv/git/quizzes"
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected="Python.main">
     <configuration name="getfileper" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="python" />
