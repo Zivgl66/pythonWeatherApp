@@ -1,9 +1,11 @@
+# remove all elements except string type from a given list
 def removeStrFromList(my_list):
     for item in my_list[:]:
         if not isinstance(item, str):
             my_list.remove(item)
 
 
+# return a dict of how many time each letter appears in a string
 def checkOccurrence(string):
     my_dict = {}
     for elm in string:
@@ -14,6 +16,7 @@ def checkOccurrence(string):
     return my_dict
 
 
+# return a dict of how many time each letter appears in a string
 def checkOccurrenceA(string):
     my_dict = {}
     for elm in string:
@@ -24,6 +27,7 @@ def checkOccurrenceA(string):
     return my_dict
 
 
+# return a dict of how many time each letter appears in a string
 def checkOccurrenceB(string):
     my_dict = {}
     for elm in string:
@@ -31,6 +35,7 @@ def checkOccurrenceB(string):
     return my_dict
 
 
+# given 2 lists, return a new list with the same occuring elements
 def onlyInBothLists(list1, list2):
     new_list = []
     for i in (list1 if len(list1) > len(list2) else list2):
@@ -39,10 +44,12 @@ def onlyInBothLists(list1, list2):
     return new_list
 
 
+# return a unique values list from a given dict
 def uniqueDict(dictionary):
     return list(set(dictionary.values()))
 
 
+# return how many times a value appears in a given dict
 def checkOccurrenceDict(dictionary, val):
     count = 0
     for value in dictionary.values():
@@ -51,6 +58,7 @@ def checkOccurrenceDict(dictionary, val):
     return count
 
 
+# return a list from a given dict, of only the unique values
 def unique(dictionary):
     s = list(dictionary.values())
     for x in s[:]:
@@ -59,6 +67,7 @@ def unique(dictionary):
     return s
 
 
+# move elements in a list to the left
 def rotateListLeft(my_list):
     # first_element = my_list[0]
     # my_list = my_list[1:]
@@ -66,6 +75,8 @@ def rotateListLeft(my_list):
     return my_list[1:] + my_list[:1]
 
 
+
+# print and remove every other element in a list until it is empty
 def removeAndPrintEverySecond(lis):
     count = 1
     while (len(lis) > 0):
@@ -76,10 +87,12 @@ def removeAndPrintEverySecond(lis):
             count -= (len(lis) - 1)
 
 
+# convert a given dict to a list of tuples
 def convertDictToListTup(dictionary):
     return [(k, v) for k, v in dictionary.items()]
 
 
+# print the keys of the min and max values from a given dict
 def getMaxAndMin(dictionary):
     key_list = list(dictionary.keys())
     val_list = list(dictionary.values())
