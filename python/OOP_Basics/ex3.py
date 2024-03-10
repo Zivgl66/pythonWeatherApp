@@ -25,10 +25,11 @@ class Machine:
 
     # Boot a machine using time library to get today's time.
     def start_machine(self):
-        if self.start_time:
+        if self.start_time == 0:
             return
         else:
             self.start_time = datetime.datetime.now()
+            self.stop_time = 0
 
     # Shut down a machine and hold the time
     def stop_machine(self):
@@ -52,6 +53,10 @@ class Cloud:
 
     # Add a machine, create it and add it to the machines list
     def push_machine(self, name, type):
+        for machine in self.machines:
+            if name == machine.name:
+                print("Machine already exists")
+                return
         new_machine = Machine(name, type)
         self.machines.append(new_machine)
 
