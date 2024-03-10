@@ -1,4 +1,7 @@
-from math import sqrt
+from math import sqrt # imported for calculating sqrt
+'''
+    A Python module for a point (x and y). The point has 1 method of calculating the distance from a given other point
+'''
 
 
 class Point:
@@ -13,9 +16,11 @@ class Point:
     def check_number(self, z):
         return isinstance(z, (int, float)) and not isinstance(z, bool)
 
-    def distance_from_origin(self):
-        return sqrt(self.x ** 2 + self.y ** 2)
+    def distance_from_origin(self, Point):
+        return sqrt((self.x - Point.x) ** 2 + (self.y - Point.y) ** 2)
 
 
 p = Point(1, 2)
+p2 = Point(10,20)
 print(p.x)
+print(p.distance_from_origin(p2))

@@ -2,29 +2,39 @@ import datetime
 import time
 from functools import reduce
 
+'''
+This is a Python Module that has 2 Classes. Machine class for creating a new machine, parameters are name and ype of 
+machine (1 or 2). Cloud class, which is a list that holds all machines and lets you get separate price of each machine 
+and price of all used machines.
+'''
+
 
 class Machine:
-
+    # machine constructor (name and type)
     def __init__(self, name, type):
         self.name = name
         self.type = type
-        self.start_time = None
-        self.stop_time = None
+        self.start_time = 0
+        self.stop_time = 0
 
+    # get price of machine
     def get_price(self):
         if self.type == 1:
             return 2
         return 5
 
+    # Boot a machine using time library to get today's time.
     def start_machine(self):
         if self.start_time:
             return
         else:
             self.start_time = datetime.datetime.now()
 
+    # Shut down a machine and hold the time
     def stop_machine(self):
         self.stop_time = datetime.datetime.now()
 
+    # calculate the cost of a machines run time
     def calculate_cost(self):
         if self.start_time:
             if self.stop_time:
@@ -33,20 +43,19 @@ class Machine:
         return
 
 
-def calculate(*argv):
-    return reduce(lambda x, y: int(x) + int(y), argv)
-
-
 class Cloud:
     machines = []
 
+    # Constructor to hold total price of all machines
     def __int__(self):
-        self.total_cost = None
+        self.total_cost = 0
 
+    # Add a machine, create it and add it to the machines list
     def push_machine(self, name, type):
         new_machine = Machine(name, type)
         self.machines.append(new_machine)
 
+    # Remove a machine from the machines list
     def pop_machine(self, machine):
         if len(self.machines) == 0:
             return
@@ -55,6 +64,7 @@ class Cloud:
                 self.machines.pop(i)
                 return
 
+    # Get a specific machines object using it's name
     def get_machine(self, machine):
         if len(self.machines) == 0:
             return
@@ -62,13 +72,15 @@ class Cloud:
             if self.machines[i].name == machine:
                 return self.machines[i]
 
+    # Get separate price for each machine at this given time
     def get_separate_prices(self):
         if len(self.machines) != 0:
             for i in self.machines:
-                print(f"Machine {i.name} price at the moment: {i.calculate_cost()}")
+                print(f"Machine {i.name} price at the moment: {i.calculate_cost()}$")
             return
         return 1
 
+    # Calculate the price of all machines in the list at the moment.
     def calculate_price_of_all(self):
         if len(self.machines) != 0:
             sum_of = 0
@@ -77,6 +89,7 @@ class Cloud:
             return sum_of
         return 0
 
+    # Print all machines in the machines list (name and type)
     def get_all_machines(self):
         if len(self.machines) != 0:
             for i in self.machines:
@@ -122,4 +135,3 @@ cl.get_machine("c").stop_time = dt_obj_stop1
 cl.get_machine("e").stop_time = dt_obj_stop1
 cl.get_separate_prices()
 print(f"price of all machines is: {cl.calculate_price_of_all()}$")
-print(cl.machines)
