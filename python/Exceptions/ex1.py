@@ -1,33 +1,20 @@
-# define Python user-defined exceptions
-class InvalidLengthException(Exception):
-    # Raised when the input value is less than 8 chars long
-    pass
+"""
+A program to check if a password is valid (length, latin, number, special case) if not, throw an error
+"""
 
 
-# define Python user-defined exceptions
-class InvalidLatinException(Exception):
-    # Raised when the input value does not contain any latin character
-    pass
-
-
-# define Python user-defined exceptions
-class InvalidSpecialCaseException(Exception):
-    # Raised when the input value does not contain any special character
-    pass
-
-
-# define Python user-defined exceptions
-class InvalidNumerException(Exception):
-    # Raised when the input value does not contain any number
-    pass
+class InvalidException(Exception):
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
 
 
 def check_length(password):
     try:
         if len(password) < 8:
-            raise InvalidLengthException
-    except InvalidLengthException:
-        print("Exception occurred: Invalid Length of password, at least 8 characters!")
+            raise InvalidException("Exception occurred: Invalid Length of password, at least 8 characters!")
+    except InvalidException as err:
+        print(err)
         return False
     else:
         return True
@@ -36,34 +23,33 @@ def check_length(password):
 def contain_latin_alph(password):
     try:
         if not any(char.islower() for char in password) and not any(char.isupper() for char in password):
-            raise InvalidLatinException
-    except InvalidLatinException:
-        print("Exception occurred: Invalid Password: need at least 1 latin character")
+            raise InvalidException("Exception occurred: Invalid Password: need at least 1 latin character")
+    except InvalidException as err:
+        print(err)
         return False
     else:
         return True
 
 
 def contain_special_char(password):
+    special = "@#&%"
     try:
         for char in password:
-            if char in "@#%&":
-                break
-            else:
-                raise InvalidSpecialCaseException
-    except InvalidSpecialCaseException:
-        print("Exception occurred: Invalid Password: need at least 1 special character")
+            if special.__contains__(char):
+                return True
+        else:
+            raise InvalidException("Exception occurred: Invalid Password: need at least 1 special character")
+    except InvalidException as err:
+        print(err)
         return False
-    else:
-        return True
 
 
 def contain_nums(password):
     try:
         if not (any(char.isdigit() for char in password)):
-            raise InvalidNumerException
-    except InvalidNumerException:
-        print("Exception occurred: Invalid Password: need at least 1 number")
+            raise InvalidException("Exception occurred: Invalid Password: need at least 1 number")
+    except InvalidException as err:
+        print(err)
         return False
     else:
         return True
@@ -74,5 +60,5 @@ def check_pass_complex(password):
         password)
 
 
-print(f"Password check: {check_pass_complex('2132132121')}")
+print(f"Password check: {check_pass_complex('213as%d213')}")
 
