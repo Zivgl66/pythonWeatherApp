@@ -1,4 +1,4 @@
-def countCharInStr(string, char)
+def countCharInStr(string, char):
     return string.count(char)
 
 def flipNum(num):
@@ -54,13 +54,30 @@ def sumOfDiv(num):
     return sum
 
 
-def isPrime(num):
+def is_prime(num):
     if num == 1:
         return False
     for i in range(2, num - 1, 1):
         if num % i == 0:
             return False
     return True
+
+
+def minimum_bills(money):
+    bills = [200, 100, 50, 20, 10, 5, 2, 1]
+    min_bills = 0
+    min_coins = 0
+    for b in bills:
+        if money // b > 0:
+            sum = money // b  # Checks how many bills can be entered into the amount of money.
+            money %= b  # reassigns money to itself modulo the bill.
+            if b <= 10:  # Checking whether the current iteration is a bill or a coin.
+                min_coins += sum
+            else:
+                min_bills += sum
+            print(f"{b} : {sum}")
+    print(f"minimum number of bills: {min_bills}")
+    print(f"minimum number of coins: {min_coins}")
 
 
 print(flipNum(1234))
@@ -74,4 +91,4 @@ print(containSpecialChar("1232@13"))
 print(checkLength("1232@132"))
 print(checkPassComplex("12345!asd"))
 print(sumOfDiv(10))
-print(isPrime(33))
+print(is_prime(33))
