@@ -3,15 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="8d0b6457-d2f6-42fe-9756-f636cc813bef" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OOP_Basics/.pytest_cache/v/cache/lastfailed" beforeDir="false" afterPath="$PROJECT_DIR$/OOP_Basics/.pytest_cache/v/cache/lastfailed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OOP_Basics/.pytest_cache/v/cache/nodeids" beforeDir="false" afterPath="$PROJECT_DIR$/OOP_Basics/.pytest_cache/v/cache/nodeids" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OOP_Basics/ex3.py" beforeDir="false" afterPath="$PROJECT_DIR$/OOP_Basics/ex3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/OOP_Basics/testing.py" beforeDir="false" afterPath="$PROJECT_DIR$/OOP_Basics/testing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/.pytest_cache/v/cache/lastfailed" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/.pytest_cache/v/cache/lastfailed" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/.pytest_cache/v/cache/nodeids" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/.pytest_cache/v/cache/nodeids" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/bankaccount.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/bankaccount.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/pytesting.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/pytesting.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Tests/unittesting.py" beforeDir="false" afterPath="$PROJECT_DIR$/Tests/unittesting.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_structures/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_structures/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

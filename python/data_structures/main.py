@@ -1,6 +1,8 @@
 """
     This module is part of the Python3 - Data Structures Worksheet
     Exercises 1 - 8
+    
+    CR: Denis Vasilevsky
 """
 
 
