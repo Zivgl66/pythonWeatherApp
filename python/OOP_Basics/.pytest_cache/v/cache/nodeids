@@ -1,0 +1,11 @@
+[
+  "testing.py::test_cloud_initialization",
+  "testing.py::test_get_machine_from_machines",
+  "testing.py::test_if_price_right_for_machine_type",
+  "testing.py::test_machine_initialization",
+  "testing.py::test_machine_name_initialization",
+  "testing.py::test_machine_start",
+  "testing.py::test_machine_stop",
+  "testing.py::test_machine_type_initialization",
+  "testing.py::test_pop_machine_from_machines"
+]

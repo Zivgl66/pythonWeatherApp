@@ -1,0 +1,9 @@
+[
+  "pytesting.py::test_default_initial_amount",
+  "pytesting.py::test_deposit_amount",
+  "pytesting.py::test_id_initialization",
+  "pytesting.py::test_id_intialization",
+  "pytesting.py::test_withdraw_amount",
+  "pytesting.py::test_withdraw_amount_not_enough",
+  "pytesting.py::test_withdraw_true"
+]
