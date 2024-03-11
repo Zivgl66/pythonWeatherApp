@@ -1,5 +1,4 @@
 {
   "pytest.py": true,
-  "pytesting.py::test_withdraw_amount": true,
-  "pytesting.py::test_withdraw_amount_not_enough": true
+  "pytesting.py::test_withdraw_amount": true
 }

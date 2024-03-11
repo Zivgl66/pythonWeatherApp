@@ -1,4 +1,5 @@
 [
+  "testing.py::test_calculate_method",
   "testing.py::test_cloud_initialization",
   "testing.py::test_get_machine_from_machines",
   "testing.py::test_if_price_right_for_machine_type",

@@ -41,7 +41,7 @@ class Machine:
             if self.stop_time:
                 return ((self.stop_time - self.start_time).total_seconds() // 60.0) * self.get_price()
             return ((datetime.datetime.now() - self.start_time).total_seconds() // 60.0) * self.get_price()
-        return
+        return "Machine has not started"
 
 
 class Cloud:

@@ -5,5 +5,7 @@
   "pytesting.py::test_id_intialization",
   "pytesting.py::test_withdraw_amount",
   "pytesting.py::test_withdraw_amount_not_enough",
-  "pytesting.py::test_withdraw_true"
+  "pytesting.py::test_withdraw_true",
+  "unittesting.py::TestClass::test_deposit",
+  "unittesting.py::TestClass::test_withdraw"
 ]
