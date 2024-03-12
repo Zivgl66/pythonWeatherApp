@@ -1,7 +1,7 @@
 """
     This module is part of the Python3 - Data Structures Worksheet
     Exercises 1 - 8
-    
+
     CR: Denis Vasilevsky
 """
 
@@ -11,6 +11,8 @@ def remove_str_from_list(my_list):
     for item in my_list[:]:
         if not isinstance(item, str):
             my_list.remove(item)
+    # if any(not isinstance(item,str) for item in my_list[:])
+
 
 
 # ex 2 :return a dict of how many times each letter appears in a string

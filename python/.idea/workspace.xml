@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8d0b6457-d2f6-42fe-9756-f636cc813bef" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data_structures/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/data_structures/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -34,7 +33,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "full.screen.before.presentation.mode": "false",
-    "last_opened_file_path": "/home/ziv/git/python",
+    "last_opened_file_path": "/home/ziv/git/quizzes",
     "settings.editor.selected.configurable": "preferences.pluginManager"
   }
 }]]></component>
