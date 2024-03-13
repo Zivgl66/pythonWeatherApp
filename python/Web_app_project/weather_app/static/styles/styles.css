@@ -135,9 +135,20 @@ body {
   -webkit-backdrop-filter: blur(7.2px);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
+.weather_card:hover {
+  cursor: pointer;
+  opacity: 0.6;
+  transform: translateY(-5px);
+}
 
 .validate {
   color: red;
   font-size: 18px;
   font-weight: bold;
+}
+
+@media only screen and (max-width: 450px) {
+  .weather__forecast {
+    flex-direction: column;
+  }
 }

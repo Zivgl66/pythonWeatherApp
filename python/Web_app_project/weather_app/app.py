@@ -1,16 +1,23 @@
 from flask import Flask, render_template, request
-from utils.funcs import get_weekday, validate_input
+from utils.funcs import get_weekday, validate_input, translate
 from modules.api_calls import get_weather
-from deep_translator import GoogleTranslator
+
+"""
+	This a weather app built using flask. 
+	there is a single page application, using the home route '/'.
+	by entering input, after validation, we GET req
+ 	the api for the locations weather info and render 
+  	it to the user.
+"""
 
 app = Flask(__name__)
-app.config["TEMPLATES_AUTO_RELOAD"] = True
+app.config["TEMPLATES_AUTO_RELOAD"] = True #reload when template chages
 
-# app.jinja_env.globals.update(get_weather=get_weather)
 
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    # The method renders the html template with the variables depending on validation and api call results
 	if request.method == 'GET':
 		return render_template('index.html')
 	if request.method == 'POST':
@@ -23,7 +30,7 @@ def home():
 			if data != 400:
 				days_list = get_weekday(data)
 				country = data['resolvedAddress'].split(",")[-1]
-				country = GoogleTranslator(source='auto', target='en').translate(country)
+				country = translate(country)
 				return render_template('index.html', data=data,country=country, days_list=days_list)
 			else:
 				not_found = "Location Not Found!"

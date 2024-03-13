@@ -1,8 +1,8 @@
 from datetime import datetime
+from deep_translator import GoogleTranslator
 
-def fer_to_cel(deg):
-    return (deg - 32) // 1.8
 
+# from a given data response, extract the date and reformmat and return it to a list of week days strings.
 def get_weekday(data):
     day_list= []
     for i in range(7):
@@ -13,6 +13,7 @@ def get_weekday(data):
     
 
 def validate_input(input):
+    # input validation on a given input, if it's not validated, return a string of the error, else return 'OK'
     if input == '':
         return "Input cant be empty"
     for x in input:
@@ -22,3 +23,8 @@ def validate_input(input):
             return "Input cant include Special chars!"
         
     return "OK"
+
+def translate(input):
+    # return a translated string to english from a given input
+    return GoogleTranslator(source='auto', target='en').translate(input)
+
