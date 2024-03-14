@@ -15,19 +15,37 @@
 
     <!-- <link rel="stylesheet" type="text/css" href="../styles/styles.css" /> -->
     <title>Weather App</title>
+    <script>
+      function removeFlash() {
+        const element = document.getElementById("div_flash");
+        element.remove();
+      }
+    </script>
   </head>
-
+  <!-- {% with messages = get_flashed_messages() %} {% if messages %}
+  <ul class="flashes" id=”div_flash”>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    <input
+      type="”button”"
+      value="&#10006"
+      onclick="removeFlash()"
+      right”
+    />
+    {% endfor %}
+  </ul>
+  {% endif %} {% endwith %} -->
   <body class="text-center" cz-shortcut-listen="true">
     <div class="container mt-5">
       <div class="form">
         <form
+          action="/home"
           class="form-signin d-flex flex-column bd-highlight m-6 mb-3"
           method="POST"
         >
           <div class="twelve mb-3">
             <h1>What's The Weather</h1>
           </div>
-          <!-- <h1 class="h3 mb-3 font-weight-bold">What's the Weather</h1> -->
           <label for="location" class="sr-only">Enter a City/Country</label>
           <input
             type="text"
@@ -46,7 +64,9 @@
           {% if validate %}
           <p class="validate mt-1">{{validate}}</p>
           {% endif %}
-
+          <p class="mt-2">
+            <a href="{{ url_for('logout') }}">logout</a>
+          </p>
           <p class="mt-5 mb-3 text-muted">© Ziv Gliser</p>
         </form>
       </div>
