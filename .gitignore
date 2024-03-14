@@ -1,9 +1,5 @@
 *
-*/.env
-.gitignore
-*.o
-*.exe
-*.csv
+!*.py
 !*.md
 !.gitignore
 !.myfuncs
