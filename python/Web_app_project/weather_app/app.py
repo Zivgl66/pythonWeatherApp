@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash
+from flask import Flask, render_template, request, redirect, session, url_for, flash, jsonify
 from flask_cors import CORS
-from utils.funcs import get_weekday, validate_input, translate
-from modules.db import add_user_to_db, login_user_from_db
+from utils.funcs import get_weekday, validate_input, translate,validate_user, signup_user, login_user
+# from modules.db import add_user_to_db, login_user_from_db
 from modules.api_calls import get_weather
 from datetime import timedelta
 import os
@@ -38,11 +38,12 @@ def signup():
 	if request.method == 'POST':
 		username = request.form['username']
 		password = request.form['password']
-		if add_user_to_db(username, password) is False:
+		# if add_user_to_db(username, password) is False:
+		if validate_user(username):
 			info = "User already exists or inccorect"
 			return render_template('signup.html', info=info)
 		else:
-			# signup_user(username,password)
+			signup_user(username,password)
 			return redirect('/login', code=302)
 				
 				
@@ -60,7 +61,8 @@ def login():
         username = request.form['username']
         password = request.form['password'] 
         info = "Invalid Username or Password"
-        if login_user_from_db(username, password):
+        # if login_user_from_db(username, password):
+        if login_user(username, password):
             # flash('You were successfully logged in')
             session["user"] = username
             return redirect('/home', code=302)
@@ -102,5 +104,12 @@ def logout():
 		session.pop("user", None)	
 		return redirect(url_for("login"))
 
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return jsonify({"status": 404, "message": "Not Found"}), 404
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=8080)
+

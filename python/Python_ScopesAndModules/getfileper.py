@@ -1,20 +1,32 @@
 import os # import for operating system file search and stat module
 import sys # import for the arguments in command line
-# exercise5:
+"""
+This module is exercise 5 of the Scopes and Modules Worksheet:
 
-'''
-Find the file path of a given file name
-'''
+CR: Denis Vilanevsky
+"""
+
+
 def find_files(filename):
+    """
+    Find the file path of a given file name
+    :param filename:the name of the file to find
+    :type filename: any
+    :return: None or Path of file
+    """
     for root, dirs, files in os.walk("/"):
         if filename in files:
             return os.path.join(root, filename)
     return None
 
-'''
-if File was found in the system, check it's x permissions, if none, add x to owner and group permissions
-'''
+
 def find_and_perm(file):
+    """
+    if File was found in the system, check it's x permissions, if none, add x to owner and group permissions
+    :param file: the name of the file to find
+    :type file: any
+    :return: no return value - None
+    """
     file_path = find_files(file)
     if file_path:
         if not os.access(file, os.X_OK):

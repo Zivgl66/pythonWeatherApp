@@ -1,14 +1,22 @@
+"""
+    A Python module for OOP worksheet - Linked list implementation
+
+"""
+
+
 class Node:
+    # Initialize the Node with data and next pointer
     def __init__(self, data):
         self.data = data
         self.next = None
 
 
 class LinkedList:
-
+    # Initialize the linked list
     def __init__(self):
         self.head = None
 
+    # push a new Node into the list
     def push(self, data):
         new_node = Node(data)
         if self.head is None:
@@ -21,6 +29,7 @@ class LinkedList:
 
         current_node.next = new_node
 
+    # pop the last Node of the list
     def pop(self):
         if self.head is None:
             return
@@ -37,9 +46,11 @@ class LinkedList:
 
         return data
 
+    # return the head of the list (data)
     def get_head(self):
         return self.head.data
 
+    # return the length of the list
     def get_len(self):
         counter = 0
         if self.head is None:
@@ -51,9 +62,9 @@ class LinkedList:
             current_node = current_node.next
         return counter
 
+    # return True or False if the list is empty
     def is_empty(self):
         return self.head is None
-
 
 
 linked_list = LinkedList()

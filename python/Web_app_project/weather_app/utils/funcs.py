@@ -1,6 +1,6 @@
 from datetime import datetime
 from deep_translator import GoogleTranslator
-# import json
+import json
 
 
 # from a given data response, extract the date and reformmat and return it to a list of week days strings.
@@ -36,30 +36,30 @@ def translate(input):
 #     else:
 #         return False
 
-# def validate_user(username):
-#     if username != '' and len(username) >= 3:
-#         with open("database.json" , 'r') as file:  
-#             data = json.load(file)
-#             print(data)
-#             if username in data:
-#                 return True
-#             return False
-#     else:
-#         return True
+def validate_user(username):
+    if username != '' and len(username) >= 3:
+        with open("database.json" , 'r') as file:  
+            data = json.load(file)
+            print(data)
+            if username in data:
+                return True
+            return False
+    else:
+        return True
 
-# def signup_user(username, password):
-#     with open("database.json" , "r+") as file:  
-#         user = {username : password}
-#         data = json.load(file)
-#         data.update(user)
-#         file.seek(0)
-#         json.dump(data, file , sort_keys = True)
-#         return
+def signup_user(username, password):
+    with open("database.json" , "r+") as file:  
+        user = {username : password}
+        data = json.load(file)
+        data.update(user)
+        file.seek(0)
+        json.dump(data, file , sort_keys = True)
+        return
 
-# def login_user(username, password):
-#     with open("database.json" , "r+") as file:  
-#         data = json.load(file)
-#         if username in data and data[username] == password:
-#             return True
-#         return False
+def login_user(username, password):
+    with open("database.json" , "r+") as file:  
+        data = json.load(file)
+        if username in data and data[username] == password:
+            return True
+        return False
 
