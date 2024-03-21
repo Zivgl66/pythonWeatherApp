@@ -1,3 +1,7 @@
+"""
+    This is a UNITEST module for the machine and cloud module.
+"""
+
 from unittest import mock
 import pytest
 from ex3 import Machine, Cloud
