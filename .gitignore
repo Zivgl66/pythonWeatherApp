@@ -6,5 +6,8 @@
 !*.c
 !*.sh
 !*.html
+!*.css
+!*.jpg
+!*.png
 !makefile
 
