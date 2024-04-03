@@ -25,25 +25,18 @@ class LocationPage(unittest.TestCase):
     #  get_url = self.driver.current_url
     #  assert "home" in get_url
     
-    def test_positive(self):
+    def find_location(self, location):
         input = self.driver.find_element(By.ID, "location")
-        input.send_keys("Haifa")
+        input.send_keys(location)
         submit = self.driver.find_element(By.CLASS_NAME, "btn-medium")
         submit.click()
-        time.sleep(2)
-        title = self.driver.find_element(By.CLASS_NAME, "city_title")
-        print(title.text)
-        assert "Haifa" == title.text
+        return self.driver
+    
+    def test_positive(self):
+        assert self.find_location("Haifa").find_element(By.CLASS_NAME, "city_title").text == "Haifa"
         
     def test_negative(self):
-            input = self.driver.find_element(By.ID, "location")
-            input.send_keys("blablablo")
-            submit = self.driver.find_element(By.CLASS_NAME, "btn-medium")
-            submit.click()
-            time.sleep(2)
-            title = self.driver.find_element(By.CLASS_NAME, "city_title")
-            print(title.text)
-            assert "Texas" == title.text
+            assert self.find_location("blablablo").find_element(By.CLASS_NAME, "city_title")
         
         
 if __name__ == '__main__':
