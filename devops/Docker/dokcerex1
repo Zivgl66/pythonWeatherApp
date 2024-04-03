@@ -1,0 +1,16 @@
+# only to install flask and run weather app
+FROM python:3.9 
+
+RUN apt-get update 
+RUN adduser -u 8877 newuser
+
+WORKDIR /home/newuser
+
+ADD  ../weather_app .
+
+# RUN apt install python3
+RUN pip install --upgrade pip 
+RUN pip install -r ./weather_app/requirements.txt
+
+
+CMD ["python3", "/home/newuser/weather_app/weather.py"] 
