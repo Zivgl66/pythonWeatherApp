@@ -1,0 +1,56 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: solitaire-hpa
+spec:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: solitaire
+  labels:
+    app: solitaire
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: solitaire
+  template:
+    metadata:
+      name: solitaire-pod
+      labels:
+        app: solitaire
+    spec:
+      containers:
+      - name: solitaire
+        image: chimenesjr/solitaire:nginx
+        ports:
+          - containerPort: 80
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: my-service
+      containers:
+      - name: pause
+        image: k8s.gcr.io/pause:3.1
+
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
+  selector:
+    app: my-app
+    

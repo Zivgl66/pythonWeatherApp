@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weatherapp
+  labels:
+    app: weather-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: weather-app
+  template:
+    metadata:
+      name: weatherapp-pod
+      labels:
+        app: weather-app
+    spec:
+      containers:
+      - name: weatherapp
+        image: zivgl66/ziv-repo:weatherapp-1.151
+        ports:
+            - containerPort: 8005
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-app-service
+spec:
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30080
+  selector:
+    app: my-app
