@@ -25,17 +25,6 @@ spec:
         image: chimenesjr/solitaire:nginx
         ports:
           - containerPort: 80
-    spec:
-      topologySpreadConstraints:
-      - maxSkew: 1
-        topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
-        labelSelector:
-          matchLabels:
-            app: my-service
-      containers:
-      - name: pause
-        image: k8s.gcr.io/pause:3.1
 
 
 
