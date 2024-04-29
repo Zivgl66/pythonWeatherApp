@@ -1,0 +1,21 @@
+
+
+#	Check connection to the node-group
+ansible -i /etc/ansible/hosts ec2-nodes -m ping
+
+
+#	Make a log to the managed nodes - using the nodes-group and path to the inventory file.
+
+ansible ec2-nodes -m command -a "logger -p local0.info 'Node configuration successful'" -i /etc/ansible/hosts
+
+#	Copy a file to a node
+ansible ec2-nodes -m copy -a "src=~/txt.txt dest=~/txt.txt" -i /etc/ansible/hosts
+
+#	Create a user in the managed node
+ansible ec2-nodes -m user -a "name=ziv create_home=yes shell=/bin/bash password=123456" -i /etc/ansible/hosts --become
+
+
+
+#	Run a playbook
+ansible-playbook ./first.yaml -i /etc/ansible/hosts 
+
