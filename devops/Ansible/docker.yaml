@@ -1,0 +1,40 @@
+- name: deploy docker images
+  hosts: ec2-nodes
+  gather_facts: no
+  become: true
+  tasks:
+
+    - name: install docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: install pip
+      apt:
+        name: python3-pip
+        state: present
+
+          # - name: Install python requirements
+          #      become: true
+          #      ansible.builtin.pip:
+          #        name: docker
+
+    - name: Start docker service
+      service:
+        name: docker
+        state: started
+
+    - name: Set a variable
+      set_fact:
+        image: "zivgl66/ziv-repo:weatherapp-1.151"
+
+    - name: Create a weather container
+      docker_container:
+        name: weather
+        image: "{{ image }}"
+        state: started
+        restart: yes
+        ports:
+          - "8005:8005"
+

@@ -1,0 +1,25 @@
+---
+- name: Perform tasks on Ubuntu server
+  hosts: ec2-nodes  # Specify the group or host in your inventory
+  become: yes  # Elevate privileges for running tasks
+
+  tasks:
+    - name: Stop printer.target service
+      systemd:
+        name: printer.target
+        state: stopped
+      changed_when: False  # Do not mark playbook as changed if the service is already stopped
+      notify: Restart Nginx  # Define a handler for potential Nginx restart
+
+    - name: Install the latest version of Nginx
+      apt:
+        name: nginx
+        state: latest
+      notify: Restart Nginx  # Define a handler for potential Nginx restart
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
+~                        

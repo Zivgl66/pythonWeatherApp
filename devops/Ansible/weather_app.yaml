@@ -1,0 +1,76 @@
+---
+- name: Deploy Python weather app with Gunicorn
+  hosts: ec2-nodes  # Specify the group or host in your inventory
+  gather_facts: no
+  become: true
+
+  vars_files:
+    - vault.yaml  # Path to the Vault file containing Git credentials
+
+  tasks:
+    - name: Update package index
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      become: true
+      apt:
+        name:
+          - python3-pip
+          - git
+        update_cache: yes
+
+    - name: Create application directory
+      file:
+        path: /home/ubuntu/weather_app
+        state: directory
+
+    - name: Get updated files from Git repository
+      git:
+        repo: "https://{{ git_creds.git_user }}:{{ git_creds.git_pass }}@git.infinitylabs.co.il/ilrd/ramat-gan/do17/ziv.gliser.git"
+        dest: /home/ubuntu/weather_app
+        clone: yes
+        update: yes
+      notify: Restart Gunicorn
+
+        #    - name: Create virtual environment
+        #      command: python3 -m venv /home/ubuntu/weather_app/weather_app/venv
+        #      args:
+        #creates: /home/ubuntu/weather_app/weather_app/venv
+        #      notify: Restart Gunicorn
+
+
+    - name: Install application dependencies system-wide
+      ansible.builtin.shell: |
+        pip install --break-system-packages -r /home/ubuntu/weather_app/weather_app/requirements.txt
+      become: yes
+
+    - name: Reload systemd
+      systemd:
+        daemon_reload: yes
+
+    - name: Run Gunicorn
+      ansible.builtin.shell:
+        argv:
+          - gunicorn
+          - --workers
+          - 3
+          - --bind
+          - 0.0.0.0:5000
+          - wsgi:app
+          - --daemon
+
+            # cmd: |
+            #source /home/ubuntu/weather_app/weather_app/venv/bin/activate &&
+            #gunicorn --workers 3 --bind 0.0.0.0:5000 wsgi:app --daemon
+        chdir: /home/ubuntu/weather_app/weather_app
+
+
+  handlers:
+    - name: Restart Gunicorn
+      systemd:
+        name: weather_app-gunicorn.service
+        state: restarted
+                                                                                                                                                                            78,24         Bot
+
+
