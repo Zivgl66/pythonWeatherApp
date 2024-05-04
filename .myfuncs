@@ -18,3 +18,6 @@ alias psh='git push'
 alias cbp='bash /home/ziv/boilerplate/cbp.sh'
 
 
+# terraform alias:
+alias tf='terraform'
+

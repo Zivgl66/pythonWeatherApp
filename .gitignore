@@ -10,4 +10,5 @@
 !*.jpg
 !*.png
 !makefile
+!*.tf
 
