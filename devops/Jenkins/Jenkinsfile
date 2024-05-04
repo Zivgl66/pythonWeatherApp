@@ -1,19 +1,89 @@
+#!groovy
 pipeline {
-    agent any
-    stages {
-        stage('build') {
-            steps {
-                echo 'Building'
-        }
-        stage('test') {
-            steps {
-                echo 'Testing'
-            }
-        }
-        stage('deploy') {
-            steps {
-                echo 'Deploying'
-            }
-        }
+environment {
+
+REGISTRY_URL = "https://index.docker.io/v1/"
+REGISTRY = "zivgl66/ziv-repo"
+DOCKER_IMAGE = 'weatherapp'
+VERSION = "${env.BUILD_ID}-${env.GIT_COMMIT}"
+IMG_TAG = ''
+
 }
+    agent any
+
+    stages {
+        stage('checkout') {
+            steps {
+               checkout scmGit(
+                branches: [[name: "main"]],
+                userRemoteConfigs: [[credentialsId: '1813952e-3498-4046-ba5d-54b0d4fd535b',
+                url: 'http://172.31.29.37/root/weather-app.git']]
+               )
+            }
+        }
+        stage('Setup') {
+            steps {
+                echo 'cleaning...'
+                sh 'yes | sudo docker system prune -a'
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'building...'
+                sh "sudo docker build . -t ${DOCKER_IMAGE}"
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'testing...'
+                sh "sudo docker-compose down &&  sudo docker-compose up -d"
+                sh 'weather_app/tests/test_conn.sh'
+                echo 'test success'
+                sh 'sudo docker stop $(sudo docker ps -a -q)'
+                sh 'sudo docker rm $(sudo docker ps -a -q)'
+            }
+        }
+        stage('Publish') {
+            steps {
+                script {
+                    IMG_TAG = "${REGISTRY}:${DOCKER_IMAGE}-${VERSION}"
+                }
+                sh "sudo docker tag weatherapp ${IMG_TAG}"
+                script {
+                sh "echo publishing..."
+                docker.withRegistry("${REGISTRY_URL}", 'dockerhub_id') {
+                    docker.image("${IMG_TAG}").push()
+                    }
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps{
+                sh "sudo docker rmi ${DOCKER_IMAGE}"
+        }
+    }
+        stage('Deploy') {
+            steps{
+
+                sshagent(credentials : ['ubuntu']) {
+                    sh "sudo scp -i ~/weather_app_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/nul -r ./prod/* ubuntu@54.91.89.34:~"
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@54.91.89.34 sudo TAG=${VERSION} docker-compose down"
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@54.91.89.34 sudo TAG=${VERSION} docker-compose up -d"
+        }
+        }
+    }
+}
+    post {
+        success {
+            slackSend(channel: "succeeded-build", color: 'good', message: "successful build for: ${VERSION}")
+        }
+        failure {
+            slackSend(channel: "devops-alerts", color: 'bad', message: "build failed for: ${VERSION}")
+        }
+        always{
+            sh 'yes | sudo docker system prune -a'
+            cleanWs()
+        }
+    }
 }

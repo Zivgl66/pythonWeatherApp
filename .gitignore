@@ -11,4 +11,4 @@
 !*.png
 !makefile
 !*.tf
-
+!*.yaml

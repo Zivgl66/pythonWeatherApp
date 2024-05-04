@@ -1,0 +1,38 @@
+version: "3.11"
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - dbdata6:/data/db
+
+  flask_app:
+    depends_on:
+      - mongodb
+    image: "zivgl66/ziv-repo:weatherapp-1.${TAG}"
+    environment:
+      - MONGODB_URL=mongodb://mongodb:27017/node-boilerplate
+      - PORT=8003
+    deploy:
+      replicas: 2
+    restart: always
+
+  reverse_proxy:
+    depends_on:
+      - flask_app
+    container_name: reverse-proxy
+    hostname: reverse
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+volumes:
+  dbdata6: {}
+  nginx_data: {}
