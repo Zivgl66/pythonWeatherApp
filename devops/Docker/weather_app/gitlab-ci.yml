@@ -1,0 +1,22 @@
+stages:
+  - test
+  - build
+  - deploy
+
+run_test:
+  stage: test
+  image: python:3.9
+  before_script:
+    - apt update && pip install -r requirements.txt
+  script:
+    - python -m pytest
+
+build_stage:
+  stage: build
+
+deployment:
+  stage: deploy
+  script:
+    - docker compose build && docker compose up -d
+  only:
+    - main

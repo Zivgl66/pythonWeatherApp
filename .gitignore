@@ -12,4 +12,6 @@
 !makefile
 !*.tf
 !*.yaml
+!*.yml
 !*.conf
+!*.txt

@@ -1,0 +1,52 @@
+# Build weather app image with logs , tag it and publish
+
+sudo docker run -p 5000:5000 -d -v /home/ubuntu/weatherapp:/project/logs zivgl66/ziv-repo:weatherapp-2 
+
+
+# Generate an SSL certifcate
+
+openssl genrsa 2048 > /etc/ssl/ca-key.pem
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout /etc/ssl/server.key \
+    -out /etc/ssl/server.crt \
+    -CA /etc/ssl/ca-cert.pem \
+    -CAkey /etc/ssl/ca-key.pem
+    
+    
+    openssl req -new -x509 -nodes -days 365000 \
+    -key /etc/ssl/ca-key.pem \
+    -out /etc/ssl/ca-cert.pem
+    
+    
+
+
+# logstash.conf 
+    
+input {
+    beats {
+        port => "5044"
+        #ssl => true
+        id => "my-filestream-id"
+        #ssl_certificate => "/etc/logstash/conf.d/server.crt"
+        #ssl_key => "/etc/logstash/conf.d/server.key"
+  }
+}
+
+filter {
+    grok {
+      match => {
+        "message" => [
+          "%{TIMESTAMP_ISO8601:timestamp} - %{DATA:logger} - %{LOGLEVEL:level} - %{GREEDYDATA:message_content}"
+      ]
+    }
+  }
+}
+
+output {
+    elasticsearch {
+        hosts => ["http://localhost:9200"]
+        data_stream => false
+    }
+}
+
