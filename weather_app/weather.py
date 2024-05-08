@@ -5,6 +5,10 @@ from modules.db import add_user_to_db, login_user_from_db
 from modules.api_calls import get_weather
 from datetime import timedelta
 import os
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 """
     This a weather app built using flask. 
@@ -25,13 +29,21 @@ app.permanent_session_lifetime = timedelta(seconds=15)
 
 @app.route('/', methods=['GET', 'POST'])
 def root():
-    return redirect('/login', code=302)
+        logging.basicConfig(filename='./logs/app_logs.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        logger.setLevel(logging.INFO)
+        logger.warning('Someone has logged in')
+        return redirect('/login', code=302)
 
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET':
         if "user" not in session:
+            logging.basicConfig(filename='./logs/app_logs.log', level=logging.CRITICAL, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            logger.setLevel(logging.CRITICAL)
+            # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            
+            logger.critical('Someone wants to signup')
             return render_template('signup.html')
         else:
             return redirect('/home', code=302)
@@ -41,6 +53,9 @@ def signup():
         if add_user_to_db(username, password) is False:
         #if validate_user(username):
             info = "User already exists or inccorect"
+            logging.basicConfig(filename='./logs/app_logs.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            logger.setLevel(logging.DEBUG)
+            logger.warn('Failed Sinup')
             return render_template('signup.html', info=info)
         else:
             #signup_user(username, password)
@@ -52,6 +67,9 @@ def login():
     if request.method == 'GET':
         if "user" in session:
             return redirect('/home', code=302)
+        logging.basicConfig(filename='./logs/app_logs.log', level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        logger.setLevel(logging.WARNING)
+        logger.warning('Someone wants to login')
         return render_template('login.html')
     if request.method == 'POST':
         session.permanent = True
@@ -64,6 +82,9 @@ def login():
             session["user"] = username
             return redirect('/home', code=302)
         else:
+            logging.basicConfig(filename='./logs/app_logs.log', level=logging.WARN, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            logger.setLevel(logging.WARN)
+            logger.warn('Failed Login')
             return render_template('login.html', info=info)
 
 
@@ -72,6 +93,9 @@ def home():
     # The method renders the html template with the variables depending on validation and api call results
     if request.method == 'GET':
         if "user" in session:
+            logging.basicConfig(filename='./logs/app_logs.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            logger.setLevel(logging.INFO)
+            logger.warning('Someone has logged in')
             return render_template('index.html')
         return redirect('/login', code=302)
     if request.method == 'POST' and "user" in session:
