@@ -155,16 +155,16 @@ output.logstash:
   # The Logstash hosts
   hosts:
     ["172.31.52.83:5044"]
-    #ssl.enabled: true
+  ssl.enabled: true
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
-  # ssl.certificate_authorities: ["/etc/ssl/filebeat/logstash-beat.crt"]
+  ssl.certificate_authorities: ["/etc/filebeat/server.crt"]
 
   # Certificate for SSL client authentication
-  #ssl.certificate: "/etc/ssl/server.crt"
+  ssl.certificate: "/etc/filebeat/server.crt"
 
   # Client Certificate Key
-  #ssl.key: "/etc/ssl/server.key"
+  ssl.key: "/etc/filebeat/server.key"
 
 # ================================= Processors =================================
 processors:
