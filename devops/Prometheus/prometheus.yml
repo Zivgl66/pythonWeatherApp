@@ -1,0 +1,29 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'prometheus'
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'flask'
+    static_configs:
+      - targets: ['172.31.26.200:5000']
+
+  - job_name: 'node_exporter_flask'
+    static_configs:
+      - targets: ['172.31.26.200:9100']
+
+
+rule_files:
+  - "instance_shutdown_rules.yml"
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - '172.31.42.119:9093'
+

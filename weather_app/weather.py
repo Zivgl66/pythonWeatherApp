@@ -6,9 +6,20 @@ from modules.api_calls import get_weather
 from datetime import timedelta
 import os
 import logging
+from prometheus_client import Counter, CONTENT_TYPE_LATEST, generate_latest, Gauge
 
 
+# Logs for filebeat
 logger = logging.getLogger(__name__)
+
+
+#   Metrics for prometheus
+# Create a counter metric to count requests
+request_count = Counter('http_req_total', 'HTTP Requests Total')
+# Create a gauge metric to measure system memory usage
+memory_usage = Gauge('memory_usage_in_bytes', 'System Memory Usage')
+# Create a counter to see how many time a city was searched
+city_counter = Counter('city_search_total', 'City Search Total', ['location'])
 
 """
     This a weather app built using flask. 
@@ -29,6 +40,7 @@ app.permanent_session_lifetime = timedelta(seconds=15)
 
 @app.route('/', methods=['GET', 'POST'])
 def root():
+        request_count.inc()
         logging.basicConfig(filename='./logs/app_logs.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         logger.setLevel(logging.INFO)
         logger.warning('Someone has logged in')
@@ -38,6 +50,7 @@ def root():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'GET':
+        request_count.inc()
         if "user" not in session:
             logging.basicConfig(filename='./logs/app_logs.log', level=logging.CRITICAL, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             logger.setLevel(logging.CRITICAL)
@@ -48,6 +61,7 @@ def signup():
         else:
             return redirect('/home', code=302)
     if request.method == 'POST':
+        request_count.inc()
         username = request.form['username']
         password = request.form['password']
         if add_user_to_db(username, password) is False:
@@ -65,6 +79,7 @@ def signup():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
+        request_count.inc()
         if "user" in session:
             return redirect('/home', code=302)
         logging.basicConfig(filename='./logs/app_logs.log', level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -72,6 +87,7 @@ def login():
         logger.warning('Someone wants to login')
         return render_template('login.html')
     if request.method == 'POST':
+        request_count.inc()
         session.permanent = True
         username = request.form['username']
         password = request.form['password']
@@ -92,6 +108,7 @@ def login():
 def home():
     # The method renders the html template with the variables depending on validation and api call results
     if request.method == 'GET':
+        request_count.inc()
         if "user" in session:
             logging.basicConfig(filename='./logs/app_logs.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             logger.setLevel(logging.INFO)
@@ -99,7 +116,9 @@ def home():
             return render_template('index.html')
         return redirect('/login', code=302)
     if request.method == 'POST' and "user" in session:
+        request_count.inc()
         location = request.form['location']
+        city_counter.labels(location=location).inc()
         validate = validate_input(location)
         if validate != 'OK':
             return render_template('index.html', validate=validate)
@@ -120,12 +139,20 @@ def home():
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     if request.method == 'GET':
+        request_count.inc()
         session.pop("user", None)
         return redirect(url_for("login"))
 
 
+@app.route('/metrics')
+def metrics():
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
+
+
+
 @app.errorhandler(404)
 def page_not_found(e):
+    request_count.inc()
     return jsonify({"status": 404, "message": "Not Found"}), 404
 
 

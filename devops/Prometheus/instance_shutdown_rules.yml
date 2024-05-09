@@ -1,0 +1,9 @@
+groups:
+  - name: alert.rules
+    rules:
+      - alert: InstanceDown
+        expr: up{instance="172.31.26.200:9100"} == 0
+        for: 1m
+        labels:
+          severity: "critical"
+
