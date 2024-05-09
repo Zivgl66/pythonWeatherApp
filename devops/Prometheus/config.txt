@@ -2,7 +2,7 @@
 
 docker run \
     -p 9090:9090 \
-    -v /home/ubuntu/prometheus.yml:/etc/prometheus/prometheus.yml \
+    -v /home/ubuntu:/etc/prometheus \
     prom/prometheus
     
 # Install Grafana
@@ -32,5 +32,8 @@ sudo chown alertmanager:alertmanager /usr/bin/alertmanager
 sudo chown alertmanager:alertmanager /usr/bin/amtool
 sudo cp alertmanager.yml /etc/alertmanager/alertmanager.yml
 sudo chown alertmanager:alertmanager /etc/alertmanager/alertmanager.yml
+
+
+
 
 
