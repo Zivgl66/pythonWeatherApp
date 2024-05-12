@@ -82,6 +82,7 @@ jobs:
             echo "new_version=$new_version" >> $GITHUB_OUTPUT
           fi
           echo "new version is: ${{ steps.new_version.outputs.new_version }}"
+          
 
       - name: Commit and push the new version file
         if: steps.new_version.outcome == 'success' # Ensure this step runs only if Increment version was successful
@@ -119,14 +120,14 @@ jobs:
         id: fmt
         run: terraform fmt -check
         continue-on-error: true
-
+        
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"
-
+          aws-region: "us-east-1" 
+          
       - name: Terraform Init
         id: init
         working-directory: "terraform"
@@ -146,4 +147,6 @@ jobs:
       - name: Terraform Apply
         id: apply
         working-directory: "terraform"
-        run: terraform apply -var="docker_image_version=${{ steps.new_version.outputs.new_version }}" -auto-approve
+        run: |
+          terraform taint aws_instance.instance
+          terraform apply -var="docker_image_version=${{ steps.new_version.outputs.new_version }}" -auto-approve

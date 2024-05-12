@@ -4,13 +4,13 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.0"
     }
+ 
   }
-  backend "s3" {
+ backend "s3" {
     bucket                  = "ziv-tf-state"
     key                     = "my-terraform-project"
     region                  = "us-east-1"
     }
-
   required_version = ">= 1.2.0"
 }
 
@@ -20,6 +20,10 @@ provider "aws" {
 
 module "security" {
   source = "./modules/"
+}
+
+variable "docker_image_version" {
+  description = "Version of the Docker image to deploy"
 }
 
 resource "aws_instance" "instance" {
@@ -50,7 +54,7 @@ resource "aws_instance" "instance" {
     sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
   
     # Run the Docker image
-    sudo docker run -d -p 8000:8000 zivgl66/ziv-repo:simple-maven-1.0.0
+    sudo docker run -d -p 8000:8000 zivgl66/ziv-repo:simple-maven-${var.docker_image_version}
   EOF
 
 }
