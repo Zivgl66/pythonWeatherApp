@@ -140,10 +140,10 @@ jobs:
       - name: Terraform Plan
         id: plan
         working-directory: "terraform"
-        run: terraform plan -var="docker_image_version=${{ steps.new_version.outputs.version }}" -no-color
+        run: terraform plan -var="docker_image_version=${{ steps.new_version.outputs.new_version }}" -no-color
         continue-on-error: true
 
       - name: Terraform Apply
         id: apply
         working-directory: "terraform"
-        run: terraform apply -var="docker_image_version=${{ steps.new_version.outputs.version }}" -auto-approve
+        run: terraform apply -var="docker_image_version=${{ steps.new_version.outputs.new_version }}" -auto-approve
