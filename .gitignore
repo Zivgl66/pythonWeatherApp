@@ -15,3 +15,5 @@
 !*.yml
 !*.conf
 !*.txt
+.gitignore
+
