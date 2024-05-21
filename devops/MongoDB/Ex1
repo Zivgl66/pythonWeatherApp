@@ -1,0 +1,22 @@
+3. show dbs
+4. db.createUser({
+   user: "admin",
+   pwd: "yourSecurePassword", // Replace with a strong password
+   roles: [
+     { role: "root", db: "admin" }
+   ]
+ })
+5. db.auth("admin", "Aa123456")
+6. use students
+7. db.createCollection("training")
+8. show collections
+9. db.training.insertOne({name: "Ziv", Age: 30, City: "Tel-aviv"})
+10. db.training.find()
+11. db.training.find().pretty()
+12. db.training.insertMany([{name: "shlop", Age: 24, City: "Tel-aviv"}, {name: "Mong", Age: 36, City: "Mongogo"}])
+13. db.training.deleteOne({ _id: ObjectId("664c2f5e85764d3a22c39a2d")})
+14. db.training.drop()
+15. db.students.drop()
+
+
+

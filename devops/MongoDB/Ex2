@@ -1,0 +1,19 @@
+1. mongoimport --jsonArray ./restaurants.json 
+2. db.restaurants.find({} , {_id: 0, restaurant_id: 1, name: 1, borough: 1, cuisine: 1})
+3. db.restaurants.find({} , {borough: "Bronx"})
+4. db.restaurants.find({} , {borough: "Bronx"}).limit(5)
+5. db.restaurants.find({
+  grades: {
+    $elemMatch: {
+      score: { $gt: 80, $lt: 100 }
+    }
+  }
+}).pretty()
+
+6. db.restaurants.find({ $and: [ { grades: { $elemMatch: { grade: "A" } } }, { cuisine: { $ne: "American " } }, { borough: { $ne: "Brooklyn" } }] }).sort({ cuisine: 1 }).pretty()
+
+
+7. 	db.restaurants.find({name: /^Wil/},{restaurant_id: 1, name: 1, borough: 1, cuisine:1})
+
+8.db.restaurants.find({$or: [{borough:"Queens"}, {borough: "Staten Island"}, {borough: "Bronx"}, {borough:"Brooklyn"}]},{restaurant_id: 1, name: 1, borough: 1, cuisine:1})
+

@@ -1,0 +1,32 @@
+into outfile '/var/lib/mysql-files/ex12.txt';
+
+
+# Exercise 10:
+select pc.model, pc.price from PC pc JOIN Product p ON pc.model = p.model WHERE p.manufacturer = 'B' UNION ALL select l.model, l.price from Laptop l JOIN Product p ON l.model = p.model where p.manufacturer = 'B' UNION ALL select pr.model, pr.price from Printer pr JOIN Product p ON pr.model = p.model where p.manufacturer = 'B';
+
+#	Exercise 11:
+SELECT p1.model, p1.price, p2.manufacturer
+FROM PC p1
+JOIN Product p2 ON p1.model = p2.model
+JOIN (
+    SELECT p3.manufacturer, MAX(p1.price) AS max_price
+    FROM PC p1
+    JOIN Product p3 ON p1.model = p3.model
+    GROUP BY p3.manufacturer
+) p4 ON p2.manufacturer = p4.manufacturer AND p1.price = p4.max_price;
+
+
+#	Exercise 12:
+UPDATE PC SET price = price + 100 WHERE model = '1232'
+
+
+# EX3: ADMIN TASKS:
+1. CREATE USER 'ziv'@'localhost' IDENTIFIED BY 'Aa123456';
+2. GRANT SELECT, SHOW VIEW ON Computer_firm.* TO 'ziv'@'localhost';
+3. SHOW GRANTS FOR 'ziv'@'localhost';
+4. mysql -u ziv -p 
+5. REVOKE ALL PRIVILEGES ON *.* FROM 'ziv'@'localhost';
+6. cant
+7. DROP USER 'ziv'@'localhost';
+
+
