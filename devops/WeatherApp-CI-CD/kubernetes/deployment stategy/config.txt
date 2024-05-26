@@ -1,0 +1,16 @@
+#   CMD to scale up the number of pods in the green environment.
+
+$ kubectl scale deployment green --replicas=3
+
+
+# CMD to verify the traffic is correctly routed to the blue deployment.
+
+$ kubectl describe service blue | grep Endpoints
+
+#   CMD to switch traffic to the green deployment.
+
+$ kubectl apply -f green-service.yaml
+
+# CMD to verify the traffic is correctly routed to the blue deployment.
+
+$ kubectl describe service green | grep Endpoints
