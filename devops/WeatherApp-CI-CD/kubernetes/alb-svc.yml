@@ -3,6 +3,9 @@ kind: Service
 metadata:
   namespace: default
   name: weather-app-service
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-name: ALB-weather-app
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
 spec:
   ports:
     - port: 80
@@ -11,6 +14,7 @@ spec:
   type: LoadBalancer
   selector:
     app.kubernetes.io/name: weather-app
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

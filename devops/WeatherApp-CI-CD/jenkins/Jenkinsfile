@@ -7,7 +7,8 @@ REGISTRY = "zivgl66/ziv-repo"
 DOCKER_IMAGE = 'weatherapp'
 VERSION = ''
 IMG_TAG = ''
-// MY_CREDENTIALS = credentials('gitlab_user_pass')
+GITHUB_CREDENTIALS_ID = 'github_cred'
+GITHUB_REPO_URL = "https://github.com/Zivgl66/version-control.git"
 
 }
     agent any
@@ -15,34 +16,38 @@ IMG_TAG = ''
     stages {
         stage('checkout') {
             steps {
-               checkout scmGit(
+                checkout scmGit(
                 branches: [[name: "main"]],
                 userRemoteConfigs: [[credentialsId: 'gitlab_api_token',
                 url: 'http://172.31.29.37/root/weather-app.git']]
                )
             }
         }
-         stage('Determine Version') {
+
+         stage('Versioning') {
             steps {
                 script {
-                    // Read the current version from version.txt
-                    def versionFile = readFile 'version.txt'
+                    sh 'rm -rf version-control'
+                    sh "git clone https://github.com/Zivgl66/version-control.git"
+                    sh "git checkout main"
+                    def versionFile = readFile 'version-control/version.txt'
+
                     echo "version in file is: ${versionFile}"
                     def (major, minor, patch) = versionFile.trim().tokenize('.').collect { it.toInteger() }
-
-                    // Get the current branch name
-                    def branch = sh(returnStdout: true, script: 'git rev-parse --abbrev-ref HEAD').trim()
-
-                    // Determine the increment based on the branch type
-                    def mergeCommitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
-                    if (branch == 'master' && mergeCommitMessage.contains('Merge branch \'dev\'')) {
+                    def branch = env.gitlabBranch
+                    echo "branch is: ${branch}"
+                    def targetBranch = env.gitlabTargetBranch
+                    echo "Target branch is: ${targetBranch}"
+                    def mergeBranch = env.gitlabSourceBranch
+                    echo "merge branch is: ${mergeBranch}"
+                    if (targetBranch == 'main' && mergeBranch.contains('dev')) {
                         major += 1
                         minor = 0
                         patch = 0
-                    } else if (branch == 'dev' && mergeCommitMessage.contains('Merge branch \'feature/')) {
+                    } else if (targetBranch == 'dev' && mergeBranch.contains('feature')) {
                         minor += 1
                         patch = 0
-                    } else if (branch == 'master' && mergeCommitMessage.contains('Merge branch \'hotfix/')) {
+                    } else if (targetBranch == 'main' && mergeBranch.contains('hotfix')) {
                         patch += 1
                     }
 
@@ -50,18 +55,29 @@ IMG_TAG = ''
                     VERSION = newVersion
                     echo "Determined version: ${VERSION}"
 
-                    // Write the new version back to version.txt
-                    writeFile file: 'version.txt', text: newVersion
+                  
+                    echo "Current Version: ${VERSION}"
+                    echo "Version in File: ${versionFile}"
+                    if (VERSION.trim() != versionFile.trim()) {
+                        writeFile file: 'version-control/version.txt', text: VERSION
+                        echo "Updated version in file: ${VERSION}"
+                        sh 'git status'
+                        withCredentials([usernamePassword(credentialsId: 'github_cred', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
+                            dir('version-control') {
+                                sh 'git config user.email "admin@example.com"'
+                                sh 'git config user.name "Administrator"'
+                                sh 'git add version.txt'
+                                sh "git commit -m 'increment version to ${VERSION}'"
+                                sh "git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/Zivgl66/version-control.git HEAD:main --follow-tags -o integrations.skip_ci"
+                            }
+                        }
+                    }
+                    else {
+                        echo 'nothing changed'
+                    }
                 }
             }  
-
         }
-        // stage('Setup') {
-        //     steps {
-        //         echo 'cleaning...'
-        //         sh 'yes | sudo docker system prune -a'
-        //     }
-        // }
         stage('Build') {
             steps {
                 echo 'building...'
@@ -92,41 +108,14 @@ IMG_TAG = ''
                 }
             }
         }
-        // stage('Push Version Update') {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: '1813952e-3498-4046-ba5d-54b0d4fd535b', usernameVariable: MY_CREDENTIALS_USR, passwordVariable: MY_CREDENTIALS_PSW)]) {
-        //             script {
-        //                 // Configure Git to use the credentials
-        //                     // git config user.email "jenkins@example.com"
-        //                 sh '''
-        //                     git config user.name "root"
-        //                     git config credential.helper store
-        //                     echo "https://${MY_CREDENTIALS_USR}:${MY_CREDENTIALS_PSW}@gitlab.com" > ~/.git-credentials
-        //                     git add version.txt
-        //                     git commit -m "Update version to ${VERSION}"
-        //                     git push origin HEAD
-        //                     rm ~/.git-credentials
-        //                 '''
-        //             }
-        //         }
-        //     }
-        // }
-        // stage('EKS') {
-        //     steps{
-        //         script {
-        //             sh "export IMAGE_TAG='${IMG_TAG}'"
-        //             sh "aws eks update-kubeconfig --name pc-eks --region us-east-1"
-        //             sh "cd /home/ubuntu/workspace/weather_app/EKS && envsubst < eks-manifest.yml | kubectl apply -f -"
-        //             sh "cd /home/ubuntu/workspace/weather_app/EKS && kubectl apply -f elb-svc.yml"
-        //         }
-        //     }
-        // }
-        stage('EKS') {
+    
+        stage('Deploy to EKS') {
             steps {
                 script {
                     sh "export IMAGE_TAG='${IMG_TAG}'"
                     sh "aws eks update-kubeconfig --name pc-eks --region us-east-1"
-                    sh "kubectl apply -f /home/ubuntu/workspace/weather_app/EKS/eks-manifest.yml --validate=false"
+                    sh "sed -e 's|VERSION|${VERSION}|g' /home/ubuntu/workspace/weather_app/EKS/eks-manifest.yml | kubectl apply -f /home/ubuntu/workspace/weather_app/EKS/eks-manifest.yml --validate=false"
+                    // sh "kubectl apply -f /home/ubuntu/workspace/weather_app/EKS/eks-manifest.yml --validate=false"
                     sh "kubectl apply -f /home/ubuntu/workspace/weather_app/EKS/alb-svc.yml --validate=false"
                 }
             }
@@ -136,27 +125,17 @@ IMG_TAG = ''
                 sh "sudo docker rmi ${DOCKER_IMAGE}"
         }   
     }
-    //     stage('Deploy') {
-    //         steps{
-
-    //             sshagent(credentials : ['ubuntu']) {
-    //                 sh "sudo scp -i ~/weather_app_key.pem -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/nul -r ./prod/* ubuntu@54.91.89.34:~"
-    //                 sh "ssh -o StrictHostKeyChecking=no ubuntu@54.91.89.34 sudo TAG=${VERSION} docker-compose down"
-    //                 sh "ssh -o StrictHostKeyChecking=no ubuntu@54.91.89.34 sudo TAG=${VERSION} docker-compose up -d"
-    //     }
-    //     }
-    // }
 }
-    // post {
-    //     success {
-    //         slackSend(channel: "succeeded-build", color: 'good', message: "successful build for: ${VERSION}")
-    //     }
-    //     failure {
-    //         slackSend(channel: "devops-alerts", color: 'bad', message: "build failed for: ${VERSION}")
-    //     }
-    //     // always{
-    //     //     // sh 'yes | sudo docker system prune -a'
-    //     //     // cleanWs()
-    //     // }
-    // }
+    post {
+        success {
+            slackSend(channel: "succeeded-build", color: 'good', message: "successful build for: ${VERSION}")
+        }
+        failure {
+            slackSend(channel: "devops-alerts", color: 'bad', message: "build failed for: ${VERSION}")
+        }
+        // always{
+        //     // sh 'yes | sudo docker system prune -a'
+        //     // cleanWs()
+        // }
+    }
 }

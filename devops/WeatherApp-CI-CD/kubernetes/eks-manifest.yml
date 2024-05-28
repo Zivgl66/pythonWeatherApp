@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: weather-app
-          image: zivgl66/ziv-repo:weatherapp-1.0.0
+          image: zivgl66/ziv-repo:weatherapp-VERSION
           ports:
             - containerPort: 8005
