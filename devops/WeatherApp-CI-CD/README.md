@@ -97,6 +97,7 @@ $`\textcolor{green}{\text{7. Cleanup}}`$: Removes the Docker image from the loca
     - Docker Registry Credentials (**'docker-credentials-id'**): Used for pushing Docker images to the registry.
     - AWS Credentials (**'AWS_CREDENTIALS_ID'**): Used for accessing AWS resources.
     - Kubeconfig (**'KUBECONFIG_CREDENTIAL_ID'**): Used for accessing the EKS cluster.
+    - Slack token (slack-token-id): Used for sending Slack notifications.
 
 ### GitLab Repository
 
@@ -126,6 +127,16 @@ $`\textcolor{green}{\text{7. Cleanup}}`$: Removes the Docker image from the loca
 - Configuration:
   - Cluster Name: Defined in the **'EKS_CLUSTER_NAME'** environment variable.
   - Region: Defined in the **'AWS_REGION'** environment variable.
+
+### Slack
+
+- Purpose: Sends notifications about the pipeline status.
+- Configuration:
+  - Slack Notification Plugin for Jenkins.
+  - Slack Channels:
+    - **succeeded-build**: Channel for successful builds.
+    - **devops-alerts**: Channel for failed builds.
+  - Message Formatting: Includes version information and build status.
 
 <!-- USAGE -->
 
@@ -182,3 +193,4 @@ Ziv Galitzer - zivgl66@gmail.com
 [Linux]: https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black
 [Docker]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
 [Kubernetes]: https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white
+
