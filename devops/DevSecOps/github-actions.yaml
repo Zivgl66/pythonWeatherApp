@@ -1,0 +1,300 @@
+name: GitHub Actions CI/CD
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master
+      - dev
+
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: install notary
+        run: sudo apt install notary
+
+      # - name: Set up JDK 11
+      #   uses: actions/setup-java@v2
+      #   with:
+      #     distribution: 'adopt'  # Specify the JDK distribution
+      #     java-version: '11'
+
+      # - name: Install .NET SDK
+      #   uses: actions/setup-dotnet@v2
+      #   with:
+      #     dotnet-version: '6.0.x'
+      - name: Import Docker Content Trust Keys
+        run: |
+          echo "${{ secrets.DOCKER_CONTENT_TRUST_ROOT_KEY }}" > root-key.pem
+          echo "${{ secrets.DOCKER_CONTENT_TRUST_REPO_KEY }}" > repo-key.pem
+          notary -d ~/.docker/trust key import root-key.pem --role root
+          notary -d ~/.docker/trust key import repo-key.pem --role targets
+          rm root-key.pem repo-key.pem
+
+      # #  Step to install OWASP dependency check and run it
+      # - name: Install OWASP Dependency-Check
+      #   run: |
+      #     wget https://github.com/jeremylong/DependencyCheck/releases/download/v6.5.1/dependency-check-6.5.1-release.zip
+      #     unzip dependency-check-6.5.1-release.zip
+      #     sudo mv dependency-check /usr/local/bin/dependency-check
+
+      # - name: Run OWASP Dependency-Check
+      #   run: |
+      #     /usr/local/bin/dependency-check/bin/dependency-check.sh --project "myproject" --scan . --format "ALL" --disableAssembly
+
+      # - name: Check for vulnerabilities
+      #   run: |
+      #     if grep -q "CRITICAL" dependency-check-report.html; then
+      #       echo "Critical vulnerabilities found!"
+      #       exit 1
+      #     else
+      #       echo "No critical vulnerabilities found."
+      #     fi
+
+      # - name: Upload Dependency-Check Report
+      #   if: failure()  # Upload report if there is a failure
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: dependency-check-report
+      #     path: dependency-check-report.html
+
+      # - name: Install Snyk
+      #   run: |
+      #     npm install -g snyk
+      #     snyk auth ${{ secrets.SNYK_TOKEN }}
+      #     snyk test --severity-threshold=critical
+
+      # # - name: Authenticate Snyk
+      # #   run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+      # # - name: Test for vulnerabilities
+      # #   run: snyk test --severity-threshold=critical
+
+      # # - name: Scan Dockerfile for vulnerabilities
+      # #   run: snyk container test --file=Dockerfile --severity-threshold=high
+
+      # - name: Upload Snyk Report
+      #   if: failure()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: snyk-report
+      #     path: snyk-output.txt
+
+      # - name: Install Trivy
+      #   run: |
+      #     sudo apt-get update -y
+      #     sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+      #     wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+      #     echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+      #     sudo apt-get update -y
+      #     sudo apt-get install -y trivy
+
+      # - name: Scan Dockerfile for vulnerabilities
+      #   run: |
+      #     trivy config ./Docker --exit-code 1 --severity CRITICAL
+
+      # - name: Upload Trivy Report
+      #   if: failure()
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: trivy-report
+      #     path: trivy-config-results.json
+
+      # Step to determine the current version
+      - name: Read current version
+        id: current_version
+        run: |
+          current_version=$(cat version.txt)
+          echo "Current version: $current_version"
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+
+      # Step to determine version increment type
+      - name: Determine version increment type
+        id: determine_version_type
+        run: |
+          # Check if the pull request was merged
+          if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            base_branch="${{ github.event.pull_request.base.ref }}"
+            head_branch="${{ github.event.pull_request.head.ref }}"
+
+            # Determine the type of version increment needed
+            if [[ "$base_branch" == "master" && "$head_branch" =~ hotfix ]]; then
+                echo "version_increment_type=patch" >> $GITHUB_OUTPUT
+            elif [[ "$base_branch" == "master" && "$head_branch" == "dev" ]]; then
+              echo "version_increment_type=minor" >> $GITHUB_OUTPUT
+            elif [[ "$base_branch" == "master" ]]; then
+              echo "version_increment_type=major" >> $GITHUB_OUTPUT
+            else
+              echo "version_increment_type=none" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Increment version
+        id: new_version
+        run: |
+          current_version="${{ steps.current_version.outputs.current_version }}"
+          IFS='.' read -ra ver <<< "$current_version"
+          major=${ver[0]}
+          minor=${ver[1]}
+          patch=${ver[2]}
+          version_increment_type="${{ steps.determine_version_type.outputs.version_increment_type }}"
+          echo "version increment type is: $version_increment_type"
+
+          if [[ "$version_increment_type" == "major" ]]; then
+            major=$((major + 1))
+            minor=0
+            patch=0
+          elif [[ "$version_increment_type" == "minor" ]]; then
+            minor=$((minor + 1))
+            patch=0
+          elif [[ "$version_increment_type" == "patch" ]]; then
+            patch=$((patch + 1))
+          fi
+
+          new_version="$major.$minor.$patch"
+          if [[ "$new_version" != "" && "$new_version" != "$current_version" ]]; then
+            echo "New version: $new_version"
+            echo $new_version > version.txt
+            echo "new_version=$new_version" >> $GITHUB_OUTPUT
+          else
+            echo "new_version=$new_version" >> $GITHUB_OUTPUT
+          fi
+          echo "new version is: ${{ steps.new_version.outputs.new_version }}"
+
+      - name: Commit and push the new version file
+        if: steps.new_version.outcome == 'success' # Ensure this step runs only if Increment version was successful
+        run: |
+          new_version="${{ steps.new_version.outputs.new_version }}"
+          if [[ "$new_version" != "" && "$new_version" != "${{ steps.current_version.outputs.current_version }}" ]]; then
+            git config --local user.name "GitHub Actions"
+            git config --local user.email "actions@github.com"
+            git add version.txt
+            git commit -m "Bump version to $new_version"
+            git push origin master
+          else
+            echo "new_version=${{ steps.current_version.outputs.current_version }}" >> $GITHUB_OUTPUT
+          fi
+          echo "new version is: ${{ steps.new_version.outputs.new_version }}"
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # - name: Build Docker image
+      #   run: |
+      #     docker build -t myimage .
+      #     docker tag myimage ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }}
+      #   env:
+      #     IMAGE_NAME: simple-maven
+      #     DOCKER_REPO: zivgl66/ziv-repo
+
+      - name: Build Docker Image
+        run: |
+          docker buildx build --platform linux/amd64 -t ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }} --load .
+        env:
+          IMAGE_NAME: simple-maven
+          DOCKER_REPO: zivgl66/repo2
+
+      - name: Enable Docker Content Trust and Push Image
+        run: |
+          export DOCKER_CONTENT_TRUST=1
+          echo "Docker Content Trust Enabled"
+          DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE }} \
+          DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE=${{ secrets.DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE }} \
+          docker push ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }}
+        env:
+          IMAGE_NAME: simple-maven
+          DOCKER_REPO: zivgl66/repo2
+
+      - name: Verify Docker Image
+        run: |
+          docker trust inspect --pretty ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }}
+        env:
+          IMAGE_NAME: simple-maven
+          DOCKER_REPO: zivgl66/repo2
+
+      # - name: Setup docker sign
+      #   run: |
+      #     #export DOCKER_CONTENT_TRUST=1
+      #     #export DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE="${{ secrets.DOCKER_CONTENT_TRUST_ROOT_PASSPHRASE }}"
+      #     #export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${{ secrets.DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE }}"
+      #     export DOCKER_CONTENT_TRUST=1
+      #     export DOCKER_CONTENT_TRUST_SERVER="https://notary.example.com"
+      #     export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="some_password5"
+      #     docker trust key load --name devops ./new_devops_private.key
+      #     docker push
+
+      # - name: Push Docker image
+      #   run: |
+      #     # docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+      #     docker trust sign ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }}
+      #     docker push ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }}
+      #   env:
+      #     IMAGE_NAME: simple-maven
+      #     DOCKER_REPO: zivgl66/ziv-repo
+
+      # - name: Build and Push Docker Image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     push: true
+      #     # build-args: VERSION=${{ steps.new_version.outputs.new_version }}
+      #     tags: ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }}
+      #   env:
+      #     IMAGE_NAME: simple-maven
+      #     DOCKER_REPO: zivgl66/ziv-repo
+
+      # - name: Terraform fmt
+      #   id: fmt
+      #   run: terraform fmt -check
+      #   continue-on-error: true
+
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v2
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: "us-east-1"
+
+      # - name: Terraform Init
+      #   id: init
+      #   working-directory: "./eks/terraform"
+      #   run: terraform init
+
+      # - name: Terraform Validate
+      #   id: validate
+      #   working-directory: "./eks/terraform"
+      #   run: terraform validate -no-color
+
+      # - name: Terraform Plan
+      #   id: plan
+      #   working-directory: "./eks/terraform"
+      #   run: terraform plan -var="docker_image_version=${{ steps.new_version.outputs.new_version }}" -no-color
+      #   continue-on-error: true
+
+      # - name: Terraform Apply
+      #   id: apply
+      #   working-directory: "./eks/terraform"
+      #   run: |
+      #     # terraform taint aws_instance.instance
+      #     terraform apply -var="docker_image_version=${{ steps.new_version.outputs.new_version }}" -auto-approve
+
+      # - name: Deploy to eks-cluster
+      #   env:
+      #     IMAGE_TAG: ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }}
+      #   run: |
+      #     kubectl apply -f eks-manifest.yml
