@@ -1,0 +1,74 @@
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: nginx-secret
+# data:
+#   .secret-file: dmFsdWUtMg0KDQo=
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: nginx-port
+# data:
+#   port: "3000"
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: nginx-deployment
+# spec:
+#   selector:
+#     matchLabels:
+#       app: nginx
+#   replicas: 4
+#   template:
+#     metadata:
+#       labels:
+#         app: nginx
+#     spec:
+#       containers:
+#         - name: nginx
+#           image: nginx:1.14.2
+#           ports:
+#             - containerPort: 80
+#           env:
+#             - name: PORT
+#               valueFrom:
+#                 configMapKeyRef:
+#                   name: nginx-port
+#                   key: port
+#           envFrom:
+#             - secretRef:
+#                 name: nginx-secret
+#   strategy:
+#     type: RollingUpdate
+#     rollingUpdate:
+#       maxUnavailable: 1
+#       maxSurge: 25%
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.14.2
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html
+              name: nfs-pvc-volume
+      volumes:
+        - name: nfs-pvc-volume
+          persistentVolumeClaim:
+            claimName: nfs-pvc
