@@ -36,6 +36,8 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          data:
+            password: {{ .Values.password | b64enc | quote }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           {{- with .Values.volumeMounts }}
