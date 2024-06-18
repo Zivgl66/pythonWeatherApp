@@ -37,6 +37,10 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True  # reload when template chages
 app.secret_key = "asdsadsadsaaewqewqrfdgvdfas"
 app.permanent_session_lifetime = timedelta(seconds=3600)
 
+background_color = os.getenv('BG_COLOR', '#FFFFFF')
+print("bg color: ", background_color)
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def root():
@@ -57,7 +61,7 @@ def signup():
             # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             
             logger.critical('Someone wants to signup')
-            return render_template('signup.html')
+            return render_template('signup.html',background_color=background_color)
         else:
             return redirect('/home', code=302)
     if request.method == 'POST':
@@ -70,7 +74,7 @@ def signup():
             logging.basicConfig(filename='./logs/app_logs.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             logger.setLevel(logging.DEBUG)
             logger.warn('Failed Sinup')
-            return render_template('signup.html', info=info)
+            return render_template('signup.html', info=info ,background_color=background_color)
         else:
             #signup_user(username, password)
             return redirect('/login', code=302)
@@ -85,7 +89,7 @@ def login():
         logging.basicConfig(filename='./logs/app_logs.log', level=logging.WARNING, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         logger.setLevel(logging.WARNING)
         logger.warning('Someone wants to login')
-        return render_template('login.html')
+        return render_template('login.html',background_color=background_color)
     if request.method == 'POST':
         request_count.inc()
         session.permanent = True
@@ -101,7 +105,7 @@ def login():
             logging.basicConfig(filename='./logs/app_logs.log', level=logging.WARN, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             logger.setLevel(logging.WARN)
             logger.warn('Failed Login')
-            return render_template('login.html', info=info)
+            return render_template('login.html', info=info ,background_color=background_color)
 
 
 @app.route('/home', methods=['GET', 'POST'])
@@ -113,7 +117,7 @@ def home():
             logging.basicConfig(filename='./logs/app_logs.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
             logger.setLevel(logging.INFO)
             logger.warning('Someone has logged in')
-            return render_template('index.html')
+            return render_template('index.html',background_color=background_color)
         return redirect('/login', code=302)
     if request.method == 'POST' and "user" in session:
         request_count.inc()
@@ -121,7 +125,7 @@ def home():
         city_counter.labels(location=location).inc()
         validate = validate_input(location)
         if validate != 'OK':
-            return render_template('index.html', validate=validate)
+            return render_template('index.html', validate=validate,background_color=background_color)
         else:
             data = get_weather(location)
             if data != 400:
@@ -129,10 +133,10 @@ def home():
                 country = data['resolvedAddress'].split(",")[-1]
                 country = translate(country)
                 save_query(country, data)
-                return render_template('index.html', data=data, country=country, days_list=days_list)
+                return render_template('index.html', data=data, country=country, days_list=days_list ,background_color=background_color)
             else:
                 not_found = "Location Not Found!"
-                return render_template('index.html', not_found=not_found)
+                return render_template('index.html', not_found=not_found ,background_color=background_color)
     else:
         return redirect('/login', code=302)
 
@@ -159,7 +163,7 @@ def history():
     files = os.listdir(directory)
     
     # Render HTML template with the list of files
-    return render_template('history.html', files=files)
+    return render_template('history.html', files=files )
 
 @app.route('/download/<path:filename>')
 def download_file(filename):

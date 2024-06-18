@@ -12,7 +12,11 @@
       type="text/css"
       href="{{ url_for('static',filename='styles/styles.css') }}"
     />
-
+    <style>
+      html {
+        background-color: var(--app-background-color, {{background_color}});
+      }
+    </style>
     <!-- <link rel="stylesheet" type="text/css" href="../styles/styles.css" /> -->
     <title>Weather App</title>
     <script>

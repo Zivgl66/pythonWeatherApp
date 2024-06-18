@@ -6,7 +6,8 @@ html {
   margin: 0;
   padding: 0;
   font-family: "Oswald", sans-serif;
-  background-image: url("background.jpg");
+  /* background-image: url("background.jpg"); */
+  background-color: var(--app-background-color, #ffffff);
 }
 body {
   height: 100%;
@@ -15,7 +16,7 @@ body {
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(9.9px);
   -webkit-backdrop-filter: blur(9.9px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(165, 149, 149, 0.3);
 }
 .form-signin {
   width: 100%;
