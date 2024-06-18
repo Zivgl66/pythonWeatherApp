@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, session, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, session, url_for, flash, jsonify, send_from_directory
 from flask_cors import CORS
 from utils.funcs import get_weekday, validate_input, translate, validate_user, signup_user, login_user
 from modules.db import add_user_to_db, login_user_from_db
-from modules.api_calls import get_weather
+from modules.api_calls import get_weather, save_query
 from datetime import timedelta
 import os
 import logging
@@ -34,8 +34,8 @@ city_counter = Counter('city_search_total', 'City Search Total', ['location'])
 app = Flask(__name__)
 CORS(app)
 app.config["TEMPLATES_AUTO_RELOAD"] = True  # reload when template chages
-app.secret_key = os.urandom(30)
-app.permanent_session_lifetime = timedelta(seconds=15)
+app.secret_key = "asdsadsadsaaewqewqrfdgvdfas"
+app.permanent_session_lifetime = timedelta(seconds=3600)
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -128,6 +128,7 @@ def home():
                 days_list = get_weekday(data)
                 country = data['resolvedAddress'].split(",")[-1]
                 country = translate(country)
+                save_query(country, data)
                 return render_template('index.html', data=data, country=country, days_list=days_list)
             else:
                 not_found = "Location Not Found!"
@@ -149,6 +150,24 @@ def metrics():
     return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 
+@app.route('/history')
+def history():
+    # Directory where saved query files are stored
+    directory = 'data'
+    
+    # Get a list of files in the directory
+    files = os.listdir(directory)
+    
+    # Render HTML template with the list of files
+    return render_template('history.html', files=files)
+
+@app.route('/download/<path:filename>')
+def download_file(filename):
+    # Directory where saved query files are stored
+    directory = 'data'
+    
+    # Serve the requested file for download
+    return send_from_directory(directory, filename)
 
 @app.errorhandler(404)
 def page_not_found(e):
