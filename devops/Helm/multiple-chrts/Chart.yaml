@@ -1,0 +1,4 @@
+apiVersion: v2
+name: my-webapps
+description: A Helm chart for deploying two web apps with NodePort and Ingress
+version: 0.1.0

@@ -19,101 +19,132 @@
     region = "us-east-1"
   }
 
-  #Create a custom VPC
-  resource "aws_vpc" "myvpc" {
-    cidr_block = "10.0.0.0/16"
-    tags = {
-      "Name" = "MyProjectVPC"
-    }
+# Create a custom VPC
+resource "aws_vpc" "myvpc" {
+  cidr_block = "10.0.0.0/16"
+  tags = {
+    "Name" = "MyProjectVPC"
+  }
+}
+
+# Create Subnets
+resource "aws_subnet" "Mysubnet01" {
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "us-east-1a"
+  tags = {
+    "Name" = "MyPrivateSubnet01"
+  }
+}
+
+resource "aws_subnet" "Mysubnet02" {
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "us-east-1b"
+  tags = {
+    "Name" = "MyPrivateSubnet02"
+  }
+}
+
+resource "aws_subnet" "Mysubnet03" {
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = "10.0.3.0/24"
+  availability_zone       = "us-east-1c"
+  map_public_ip_on_launch = true
+  tags = {
+    "Name" = "MyPublicSubnet03"
+  }
+}
+
+# Create Elastic IPs for NAT Gateways
+resource "aws_eip" "nat_az1" {
+  vpc = true
+}
+
+resource "aws_eip" "nat_az2" {
+  vpc = true
+}
+
+# Create NAT Gateways
+resource "aws_nat_gateway" "nat_az1" {
+  allocation_id = aws_eip.nat_az1.id
+  subnet_id     = aws_subnet.Mysubnet03.id
+  tags = {
+    Name = "nat-gateway-az1"
+  }
+}
+
+resource "aws_nat_gateway" "nat_az2" {
+  allocation_id = aws_eip.nat_az2.id
+  subnet_id     = aws_subnet.Mysubnet03.id
+  tags = {
+    Name = "nat-gateway-az2"
+  }
+}
+
+# Create Internet Gateway
+resource "aws_internet_gateway" "myigw" {
+  vpc_id = aws_vpc.myvpc.id
+  tags = {
+    "Name" = "MyIGW"
+  }
+}
+
+# Create Route Table for Public Subnet
+resource "aws_route_table" "myroutetable" {
+  vpc_id = aws_vpc.myvpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.myigw.id
+  }
+  tags = {
+    "Name" = "MyPublicRouteTable"
+  }
+}
+
+resource "aws_route_table_association" "public" {
+  subnet_id      = aws_subnet.Mysubnet03.id
+  route_table_id = aws_route_table.myroutetable.id
+}
+
+# Create Route Tables for Private Subnets
+resource "aws_route_table" "private_az1" {
+  vpc_id = aws_vpc.myvpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_az1.id
   }
 
-  #Create Subnets Private
-  resource "aws_subnet" "Mysubnet01" {
-    vpc_id                  = aws_vpc.myvpc.id
-    cidr_block              = "10.0.1.0/24"
-    availability_zone       = "us-east-1a"
-    tags = {
-      "Name" = "MyPrivateSubnet01"
-    }
+  tags = {
+    Name = "private-route-table-az1"
+  }
+}
+
+resource "aws_route_table" "private_az2" {
+  vpc_id = aws_vpc.myvpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat_az2.id
   }
 
-
-  resource "aws_subnet" "Mysubnet02" {
-    vpc_id                  = aws_vpc.myvpc.id
-    cidr_block              = "10.0.2.0/24"
-    availability_zone       = "us-east-1b"
-    tags = {
-      "Name" = "MyPrivateSubnet02"
-    }
+  tags = {
+    Name = "private-route-table-az2"
   }
+}
 
-  resource "aws_subnet" "Mysubnet03" {
-    vpc_id                  = aws_vpc.myvpc.id
-    cidr_block              = "10.0.3.0/24"
-    availability_zone       = "us-east-1c"
-    map_public_ip_on_launch = true
-    tags = {
-      "Name" = "MyPublicSubnet03"
-    }
-  }
+# Associate Private Subnets with Route Tables
+resource "aws_route_table_association" "private_a" {
+  subnet_id      = aws_subnet.Mysubnet01.id
+  route_table_id = aws_route_table.private_az1.id
+}
 
-
-  resource "aws_eip" "nat" {
-    vpc = true
-  }
-
-  resource "aws_nat_gateway" "nat" {
-    allocation_id = aws_eip.nat.id
-    subnet_id     = aws_subnet.Mysubnet03.id
-    tags = {
-      Name = "nat-gateway"
-    }
-  }
-
-  resource "aws_internet_gateway" "myigw" {
-    vpc_id = aws_vpc.myvpc.id
-    tags = {
-      "Name" = "MyIGW"
-    }
-  }
-
-  resource "aws_route_table" "myroutetable" {
-    vpc_id = aws_vpc.myvpc.id
-    route {
-      cidr_block = "0.0.0.0/0"
-      gateway_id = aws_internet_gateway.myigw.id
-    }
-    tags = {
-      "Name" = "MyPublicRouteTable"
-    }
-  }
-
-  resource "aws_route_table_association" "public" {
-    subnet_id      = aws_subnet.Mysubnet03.id
-    route_table_id = aws_route_table.myroutetable.id
-  }
-
-  resource "aws_route_table" "private" {
-    vpc_id = aws_vpc.myvpc.id
-    route {
-      cidr_block     = "0.0.0.0/0"
-      nat_gateway_id = aws_nat_gateway.nat.id
-    }
-    tags = {
-      Name = "private-route-table"
-    }
-  }
-
-  resource "aws_route_table_association" "private_a" {
-    subnet_id      = aws_subnet.Mysubnet01.id
-    route_table_id = aws_route_table.private.id
-  }
-
-  resource "aws_route_table_association" "private_b" {
-    subnet_id      = aws_subnet.Mysubnet02.id
-    route_table_id = aws_route_table.private.id
-  }
-
+resource "aws_route_table_association" "private_b" {
+  subnet_id      = aws_subnet.Mysubnet02.id
+  route_table_id = aws_route_table.private_az2.id
+}
   #Adding security group
   resource "aws_security_group" "allow_tls" {
     name_prefix = "allow_tls_"
@@ -135,6 +166,8 @@
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
     }
+
+
     egress {
       from_port   = 0
       to_port     = 0
@@ -240,6 +273,7 @@
     role       = aws_iam_role.worker.name
   }
 
+
   resource "aws_iam_role_policy_attachment" "s3" {
     policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
     role       = aws_iam_role.worker.name
@@ -282,7 +316,7 @@
 
   resource "aws_instance" "kubectl-server" {
     ami                         = "ami-04b70fa74e45c3917"
-    key_name                    = "weather_app_key"
+    key_name                    = "weather_app_key" 
     instance_type               = "t2.micro"
     associate_public_ip_address = false
     subnet_id                   = aws_subnet.Mysubnet01.id
@@ -294,41 +328,41 @@
   }
 
   resource "aws_eks_node_group" "node-grp" {
-    cluster_name    = aws_eks_cluster.eks.name
-    node_group_name = "pc-node-group"
-    node_role_arn   = aws_iam_role.worker.arn
-    subnet_ids      = [aws_subnet.Mysubnet01.id, aws_subnet.Mysubnet02.id, aws_subnet.Mysubnet03.id]
-    capacity_type   = "ON_DEMAND"
-    disk_size       = 20
-    instance_types  = ["t2.small"]
+  cluster_name    = aws_eks_cluster.eks.name
+  node_group_name = "pc-node-group"
+  node_role_arn   = aws_iam_role.worker.arn
+  subnet_ids      = [aws_subnet.Mysubnet01.id, aws_subnet.Mysubnet02.id] # Only private subnets
+  capacity_type   = "ON_DEMAND"
+  disk_size       = 20
+  instance_types  = ["t2.small"]
 
-    remote_access {
-      ec2_ssh_key               = "weather_app_key"
-      source_security_group_ids = [aws_security_group.allow_tls.id]
-    }
-
-    labels = {
-      env = "dev"
-    }
-    tags = {
-      Name = "kube-node"
-    }
-    scaling_config {
-      desired_size = 2
-      max_size     = 3
-      min_size     = 1
-    }
-
-    update_config {
-      max_unavailable = 1
-    }
-
-    depends_on = [
-      aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
-      aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,
-      aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly,
-    ]
+  remote_access {
+    ec2_ssh_key               = "weather_app_key"
+    source_security_group_ids = [aws_security_group.allow_tls.id] # Make sure this allows SSH from your IP or bastion host
   }
+
+  labels = {
+    env = "dev"
+  }
+  tags = {
+    Name = "kube-node"
+  }
+  scaling_config {
+    desired_size = 2
+    max_size     = 3
+    min_size     = 1
+  }
+
+  update_config {
+    max_unavailable = 1
+  }
+
+  depends_on = [
+    aws_iam_role_policy_attachment.AmazonEKSWorkerNodePolicy,
+    aws_iam_role_policy_attachment.AmazonEKS_CNI_Policy,
+    aws_iam_role_policy_attachment.AmazonEC2ContainerRegistryReadOnly,
+  ]
+}
 
   # # Creaton of ELB
   # resource "aws_lb" "external-alb" {

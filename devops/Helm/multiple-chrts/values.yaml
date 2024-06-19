@@ -1,0 +1,22 @@
+# Web App 1
+webApp1:
+  name: weather-app
+  image: "zivgl66/pr-repo:weather-app"
+  replicaCount: 4
+  containerPort: 5000
+  servicePort: 32300
+  ingressPath: /weather
+
+# Web App 2
+webApp2:
+  name: solitaire-app
+  image: "chimenesjr/solitaire:nginx"
+  replicaCount: 4
+  containerPort: 80
+  servicePort: 32400
+  ingressPath: /solitaire
+
+ingress:
+  enabled: true
+  host1: weather.yourdomain.com
+  host2: solitaire.yourdomain.com

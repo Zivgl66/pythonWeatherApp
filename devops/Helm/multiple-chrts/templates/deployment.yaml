@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.webApp1.name }}"
+  labels:
+    app: "{{ .Values.webApp1.name }}"
+spec:
+  replicas: {{ .Values.webApp1.replicaCount }}
+  selector:
+    matchLabels:
+      app: "{{ .Values.webApp1.name }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.webApp1.name }}"
+    spec:
+      containers:
+        - name: "{{ .Values.webApp1.name }}"
+          image: "{{ .Values.webApp1.image }}"
+          ports:
+            - containerPort: {{ .Values.webApp1.containerPort }}
+          env:
+          - name: BG_COLOR
+            valueFrom:
+              configMapKeyRef:
+                name: env-config-green  # Name of your ConfigMap
+                key: BG_COLOR     # Key within the ConfigMap
+      imagePullSecrets:
+      - name: docker-hub-cred
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.webApp2.name }}"
+  labels:
+    app: "{{ .Values.webApp2.name }}"
+spec:
+  replicas: {{ .Values.webApp2.replicaCount }}
+  selector:
+    matchLabels:
+      app: "{{ .Values.webApp2.name }}"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.webApp2.name }}"
+    spec:
+      containers:
+        - name: "{{ .Values.webApp2.name }}"
+          image: "{{ .Values.webApp2.image }}"
+          ports:
+            - containerPort: {{ .Values.webApp2.containerPort }}
+      imagePullSecrets:
+      - name: docker-hub-cred

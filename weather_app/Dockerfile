@@ -35,4 +35,6 @@ RUN chown -R weatheruser:weatheruser /project
 
 USER weatheruser
 
+ENV BG_COLOR="blue"
+
 ENTRYPOINT ["bash", "start_gunicorn_server.sh"]
