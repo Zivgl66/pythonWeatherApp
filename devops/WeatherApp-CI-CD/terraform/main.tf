@@ -34,6 +34,7 @@ resource "aws_subnet" "Mysubnet01" {
   availability_zone       = "us-east-1a"
   tags = {
     "Name" = "MyPrivateSubnet01"
+    "kubernetes.io/role/internal-elb" = 1
   }
 }
 
@@ -43,6 +44,8 @@ resource "aws_subnet" "Mysubnet02" {
   availability_zone       = "us-east-1b"
   tags = {
     "Name" = "MyPrivateSubnet02"
+    "kubernetes.io/role/internal-elb" = 1
+
   }
 }
 
@@ -53,8 +56,21 @@ resource "aws_subnet" "Mysubnet03" {
   map_public_ip_on_launch = true
   tags = {
     "Name" = "MyPublicSubnet03"
+    "kubernetes.io/role/elb" = 1
   }
 }
+
+resource "aws_subnet" "Mysubnet04" {
+  vpc_id                  = aws_vpc.myvpc.id
+  cidr_block              = "10.0.4.0/24"
+  availability_zone       = "us-east-1d"
+  map_public_ip_on_launch = true
+  tags = {
+    "Name" = "MyPublicSubnet04"
+    "kubernetes.io/role/elb" = 1
+  }
+}
+
 
 # Create Elastic IPs for NAT Gateways
 resource "aws_eip" "nat_az1" {
@@ -76,7 +92,7 @@ resource "aws_nat_gateway" "nat_az1" {
 
 resource "aws_nat_gateway" "nat_az2" {
   allocation_id = aws_eip.nat_az2.id
-  subnet_id     = aws_subnet.Mysubnet03.id
+  subnet_id     = aws_subnet.Mysubnet04.id
   tags = {
     Name = "nat-gateway-az2"
   }
@@ -91,7 +107,7 @@ resource "aws_internet_gateway" "myigw" {
 }
 
 # Create Route Table for Public Subnet
-resource "aws_route_table" "myroutetable" {
+resource "aws_route_table" "myroutetable01" {
   vpc_id = aws_vpc.myvpc.id
 
   route {
@@ -99,13 +115,32 @@ resource "aws_route_table" "myroutetable" {
     gateway_id = aws_internet_gateway.myigw.id
   }
   tags = {
-    "Name" = "MyPublicRouteTable"
+    "Name" = "MyPublicRouteTable01"
   }
 }
 
-resource "aws_route_table_association" "public" {
+# Create Route Table for Public Subnet
+resource "aws_route_table" "myroutetable02" {
+  vpc_id = aws_vpc.myvpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.myigw.id
+  }
+  tags = {
+    "Name" = "MyPublicRouteTable02"
+  }
+}
+
+resource "aws_route_table_association" "public02" {
+  subnet_id      = aws_subnet.Mysubnet04.id
+  route_table_id = aws_route_table.myroutetable02.id
+}
+
+
+resource "aws_route_table_association" "public01" {
   subnet_id      = aws_subnet.Mysubnet03.id
-  route_table_id = aws_route_table.myroutetable.id
+  route_table_id = aws_route_table.myroutetable01.id
 }
 
 # Create Route Tables for Private Subnets

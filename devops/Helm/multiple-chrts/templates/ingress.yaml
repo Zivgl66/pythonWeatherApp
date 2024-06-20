@@ -39,21 +39,36 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: "k8s-default-mywebapp-d20f41021b-1158490442.us-east-1.elb.amazonaws.com"
+    - host: "{{ .Values.ingress.host1 }}"
       http:
         paths:
-        - path: /*
-          pathType: Prefix
+        - path: /
+          pathType: ImplementationSpecific
           backend:
             service:
               name: "{{ .Values.webApp1.name }}"
               port:
                 number: {{ .Values.webApp1.containerPort }}
-    - host: "k8s-default-mywebapp-d20f41021b-1158490442.us-east-1.elb.amazonaws.com"
+        # - path: /signup
+        #   pathType: ImplementationSpecific  # Adjust if necessary
+        #   backend:
+        #     service:
+        #       name: "{{ .Values.webApp1.name }}"
+        #       port:
+        #         number: {{ .Values.webApp1.containerPort }}
+        # - path: /home
+        #   pathType: ImplementationSpecific  # Adjust if necessary
+        #   backend:
+        #     service:
+        #       name: "{{ .Values.webApp1.name }}"
+        #       port:
+        #         number: {{ .Values.webApp1.containerPort }}
+    # - host: "k8s-default-mywebapp-d20f41021b-1158490442.us-east-1.elb.amazonaws.com"
+    - host: "{{ .Values.ingress.host2 }}"
       http:
         paths:
-        - path: /*
-          pathType: ImplementationSpecific
+        - path: /
+          pathType: Prefix
           backend:
             service:
               name: "{{ .Values.webApp2.name }}"

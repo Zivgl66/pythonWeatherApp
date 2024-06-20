@@ -27,8 +27,8 @@ eksctl create iamserviceaccount \
   --approve
 
 # 5. Install the TargetGroupBinding CRDs
-echo "Installing TargetGroupBinding CRDs..."
-kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
+# echo "Installing TargetGroupBinding CRDs..."
+# kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller//crds?ref=master"
 
 # 6. Add the Helm repository
 echo "Adding Helm repository..."
@@ -38,12 +38,13 @@ helm repo update
 # 7. Install the AWS Load Balancer Controller using Helm
 echo "Installing AWS Load Balancer Controller using Helm..."
 helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
   --set clusterName=$CLUSTER_NAME \
-  --set serviceAccount.create=false \
-  --set region=$REGION \
-  --set vpcId=$VPC_ID \
-  --set serviceAccount.name=$SERVICE_ACCOUNT_NAME \
-  --namespace $SERVICE_ACCOUNT_NAMESPACE
+  # --set serviceAccount.create=false \
+  # --set region=$REGION \
+  # --set vpcId=$VPC_ID \
+  # --set serviceAccount.name=$SERVICE_ACCOUNT_NAME \
+  # --namespace $SERVICE_ACCOUNT_NAMESPACE
 
 # 8. Verify the installation
 echo "Verifying installation..."
