@@ -1,0 +1,11 @@
+deep_translator==1.11.4
+Flask==2.2.5
+Flask_Cors==4.0.0
+pymongo==4.6.2
+python-dotenv==1.0.1
+python_bcrypt==0.3.2
+Requests==2.31.0
+gunicorn
+prometheus_client
+
+
