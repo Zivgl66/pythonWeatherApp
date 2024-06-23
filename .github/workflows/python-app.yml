@@ -64,14 +64,14 @@ jobs:
     - name: Update Kubernetes deployment manifest
       run: |
         # Replace the image tag in the Kubernetes deployment manifest
-        sed -i "s|image: ${{ secrets.DOCKERHUB_USER }}/weatherapp:.*|image: ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}|" k8s-manifests/deployment.yaml  # Update this path to your actual manifest file
+        sed -i "s|image: ${{ secrets.DOCKERHUB_USER }}/weatherapp:.*|image: ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}|" k8s-manifests/deployment.yaml 
 
     # Commit and push changes
     - name: Commit and push changes
       run: |
         cd k8s-manifests
-        git config user.name "GitHub Actions"
-        git config user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git config --local user.email "actions@github.com"
         git add deployment.yaml 
         git commit -m "Update deployment image to ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}"
-        git push origin main  
+        git push origin master
