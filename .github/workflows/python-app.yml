@@ -28,13 +28,13 @@ jobs:
     # Build Docker image
     - name: Build Docker image
       run: |
-        docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:latest .
-        docker tag ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:latest ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:${{ github.sha }}
+        docker build -t ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest .
+        docker tag ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}
 
     # Test the Docker image
     - name: Run container to test
       run: |
-        docker run --rm -d --name weatherapp-test -p 80:5000 ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:latest
+        docker run --rm -d --name weatherapp-test -p 80:5000 ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest
         # Wait for a few seconds for the app to start
         sleep 10
         # Check if the app is running by making a request to the health endpoint or main page
@@ -44,8 +44,8 @@ jobs:
     # Push Docker image to DockerHub
     - name: Push Docker image to DockerHub
       run: |
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:latest
-        docker push ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:${{ github.sha }}
+        docker push ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest
+        docker push ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}
 
   update-k8s-manifest:
     needs: build-and-push
@@ -64,7 +64,7 @@ jobs:
     - name: Update Kubernetes deployment manifest
       run: |
         # Replace the image tag in the Kubernetes deployment manifest
-        sed -i "s|image: ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:.*|image: ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:${{ github.sha }}|" k8s-manifests/deployment.yaml  # Update this path to your actual manifest file
+        sed -i "s|image: ${{ secrets.DOCKERHUB_USER }}/weatherapp:.*|image: ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}|" k8s-manifests/deployment.yaml  # Update this path to your actual manifest file
 
     # Commit and push changes
     - name: Commit and push changes
@@ -73,5 +73,5 @@ jobs:
         git config user.name "GitHub Actions"
         git config user.email "actions@github.com"
         git add deployment.yaml 
-        git commit -m "Update deployment image to ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:${{ github.sha }}"
+        git commit -m "Update deployment image to ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}"
         git push origin main  
