@@ -50,9 +50,13 @@ jobs:
   update-k8s-manifest:
     needs: build-and-push
     runs-on: ubuntu-latest
-
+              
+      
     steps:
     # Checkout the Kubernetes manifest repository
+    - name: Setup yq
+      uses: vegardit/gha-setup-yq@v1
+    
     - name: Checkout Kubernetes manifest repository
       uses: actions/checkout@v3
       with:
@@ -60,10 +64,6 @@ jobs:
         token: ${{ secrets.GH_TOKEN }}
         path: k8s-manifests  
 
-    - name: Install yq
-      run: |
-        wget https://github.com/mikefarah/yq/releases/download/v4.30.8/yq_linux_amd64 -O /usr/bin/yq
-        chmod +x /usr/bin/yq
         
     # Update the Kubernetes deployment manifest
     - name: Update Kubernetes deployment manifest
