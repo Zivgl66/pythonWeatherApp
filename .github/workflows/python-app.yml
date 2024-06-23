@@ -69,7 +69,10 @@ jobs:
     - name: Update Kubernetes deployment manifest
       run: |
         # Replace the image tag in the Kubernetes deployment manifest
-        yq -i -y '.spec.template.spec.containers[0].image = "${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}"' k8s-manifests/deployment.yaml
+        # yq -i -y '.spec.template.spec.containers[0].image = "${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}"' k8s-manifests/deployment.yaml
+        yq eval '.spec.template.spec.containers[0].image = "${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:${{ github.sha }}"' -i k8s-manifests/<path-to-your-manifest.yaml>
+
+
     - name: Print deployment manifest after update
       run: cat k8s-manifests/deployment.yaml
 
