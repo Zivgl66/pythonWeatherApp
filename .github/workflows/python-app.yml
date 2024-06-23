@@ -65,6 +65,9 @@ jobs:
       run: |
         # Replace the image tag in the Kubernetes deployment manifest
         sed -i "s|image: ${{ secrets.DOCKERHUB_USER }}/weatherapp:.*|image: ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}|" k8s-manifests/deployment.yaml 
+      
+    - name: Print deployment manifest after update
+      run: cat k8s-manifests/deployment.yaml
 
     # Commit and push changes
     - name: Commit and push changes
