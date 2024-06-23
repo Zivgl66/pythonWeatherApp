@@ -59,9 +59,11 @@ jobs:
         repository: Zivgl66/k8s-weatherapp 
         token: ${{ secrets.GH_TOKEN }}
         path: k8s-manifests  
+
     - name: Install yq
       run: |
-        sudo apt-get update && sudo apt-get install -y yq
+        wget https://github.com/mikefarah/yq/releases/download/v4.30.8/yq_linux_amd64 -O /usr/bin/yq
+        chmod +x /usr/bin/yq
         
     # Update the Kubernetes deployment manifest
     - name: Update Kubernetes deployment manifest
