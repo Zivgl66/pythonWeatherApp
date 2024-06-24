@@ -3,7 +3,7 @@ import bcrypt
 import os
 
 # client = MongoClient(os.environ.get("DB_URI"), connect=False)
-client = MongoClient("mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.0"
+client = MongoClient("mongodb://192.168.49.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.0"
                     , connect=False)
 db = client.WeatherApp
 users = db.users
