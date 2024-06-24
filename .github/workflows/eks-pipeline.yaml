@@ -17,13 +17,12 @@ jobs:
     permissions:
       contents: write
       packages: write
-      
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
 
-        
       # Step to determine the current version
       - name: Read current version
         id: current_version
@@ -100,42 +99,102 @@ jobs:
           fi
           echo "new version is: ${{ steps.new_version.outputs.new_version }}"
 
-          
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}          
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-       - name: Build Docker image
-         run: | 
-           docker build -t ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest .
-           docker tag ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest .
+          docker tag ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}
 
-          
       - name: Push Docker image to DockerHub
         run: |
           docker push ${{ secrets.DOCKERHUB_USER }}/weatherapp:latest
           docker push ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}
+
+name: GitHub Actions CI/CD
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - master
+      - dev
+
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+      
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+
+        
+      # Step to determine the current version
+      - name: Read current version
+        id: current_version
+        run: |
+          current_version=$(cat version.txt)
+          echo "Current version: $current_version"
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+
+      # Step to determine version increment type
+      - name: Determine version increment type
+        id: determine_version_type
+        run: |
+          # Check if the pull request was merged
+          if [[ "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            base_branch="${{ github.event.pull_request.base.ref }}"
+            head_branch="${{ github.event.pull_request.head.ref }}"
+
+            # Determine the type of version increment needed
+            if [[ "$base_branch" == "master" && "$head_branch" =~ hotfix ]]; then
+                echo "version_increment_type=patch" >> $GITHUB_OUTPUT
+            elif [[ "$base_branch" == "master" && "$head_branch" == "dev" ]]; then
+              echo "version_increment_type=minor" >> $GITHUB_OUTPUT
+            elif [[ "$base_branch" == "master" ]]; then
+              echo "version_increment_type=major" >> $GITHUB_OUTPUT
+            else
+              echo "version_increment_type=none" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Increment version
+        id: new_version
+        run: |
+          current_version="${{ steps.current_version.outputs.current_version }}"
+          IFS='.' read -ra ver <<< "$current_version"
+          major=${ver[0]}
+          minor=${ver[1]}
+          patch=${ver[2]}
           
- update-k8s-manifest:
+  update-k8s-manifest:
     needs: build-and-push
     runs-on: ubuntu-latest
-              
-      
+
     steps:
     # Checkout the Kubernetes manifest repository
     - name: Setup yq
       uses: vegardit/gha-setup-yq@v1
-    
+
     - name: Checkout Kubernetes manifest repository
       uses: actions/checkout@v3
       with:
-        repository: Zivgl66/k8s-weatherapp 
+        repository: Zivgl66/k8s-weatherapp
         token: ${{ secrets.GH_TOKEN }}
-        path: k8s-manifests  
+        path: k8s-manifests
 
-        
     # Update the Kubernetes deployment manifest
     - name: Update Kubernetes deployment manifest
       run: |
@@ -155,4 +214,3 @@ jobs:
         git add deployment.yaml 
         git commit -m "Update deployment image to ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}"
         git push origin main
-          
