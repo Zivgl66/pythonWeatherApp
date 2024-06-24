@@ -23,7 +23,8 @@ def add_user_to_db(username, password):
             salt = bcrypt.gensalt()
 
             # Hashing the password 
-            hash = bcrypt.hashpw(bytes, salt)
+            # hash = bcrypt.hashpw(bytes, salt)
+            hash = bcrypt.hashpw(password, salt)
             user = {'username': username, 'password': hash}
             user_id = users.insert_one(user).inserted_id
             # print(user_id)
@@ -40,6 +41,7 @@ def login_user_from_db(username, password):
     if user:
         print(user)
         user_bytes = password.encode('utf-8')
-        if bcrypt.checkpw(user_bytes, user['password']):
+        # if bcrypt.checkpw(user_bytes, user['password']):
+        if bcrypt.checkpw(password, user['password']):
             return True
     return False
