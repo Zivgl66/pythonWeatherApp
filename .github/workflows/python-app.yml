@@ -70,7 +70,7 @@ jobs:
       run: |
         # Replace the image tag in the Kubernetes deployment manifest
         # yq -i -y '.spec.template.spec.containers[0].image = "${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}"' k8s-manifests/deployment.yaml
-        yq eval '.spec.template.spec.containers[0].image = "${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:${{ github.sha }}"' -i k8s-manifests/deployment.yaml
+        yq eval '.spec.template.spec.containers[0].image = "${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}"' -i k8s-manifests/deployment.yaml
 
     - name: Print deployment manifest after update
       run: cat k8s-manifests/deployment.yaml
@@ -82,5 +82,5 @@ jobs:
         git config --local user.name "GitHub Actions"
         git config --local user.email "actions@github.com"
         git add deployment.yaml 
-        git commit -m "Update deployment image to ${{ secrets.DOCKERHUB_USERNAME }}/weatherapp:${{ github.sha }}"
+        git commit -m "Update deployment image to ${{ secrets.DOCKERHUB_USER }}/weatherapp:${{ github.sha }}"
         git push origin main
