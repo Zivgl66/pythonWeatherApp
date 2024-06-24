@@ -34,6 +34,7 @@ def add_user_to_db(username, password):
         return False
 
 
+
 def login_user_from_db(username, password):
     # This function checks if a user exists in the DB and if so, compares hashed passwords
     # and return True/False
@@ -41,7 +42,7 @@ def login_user_from_db(username, password):
     if user:
         print(user)
         user_bytes = password.encode('utf-8')
-        # if bcrypt.checkpw(user_bytes, user['password']):
-        if bcrypt.checkpw(password, user['password']):
+        if bcrypt.checkpw(user_bytes, user['password']):
+        # if bcrypt.checkpw(password, user['password']):
             return True
     return False
