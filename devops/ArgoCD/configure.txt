@@ -1,0 +1,15 @@
+#	Stages to start argocd on minikube
+$ minikube start --cpus 4 --memory 8192  # Start minikube with more cpu and memory 
+$ kubectl create namespace argocd
+$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.8.4/manifests/install.yaml
+$ kubectl get all -n argocd
+$ kubectl port-forward svc/argocd-server -n argocd 8080:443
+$ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+
+
+
+
+#	Create a new ArgoCD project from the CLI:
+$ argocd login <ARGO-SERVER-URL>
+$ argocd app create weatherk8s --repo https://github.com/Zivgl66/k8s-weatherapp --path ./ --dest-namespace default --dest-server https://kubernetes.default.svc --directory-recurse
+application 'weatherk8s' created
