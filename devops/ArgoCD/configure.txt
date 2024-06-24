@@ -7,9 +7,29 @@ $ kubectl port-forward svc/argocd-server -n argocd 8080:443
 $ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 
 
+#	ArgoCD commands:
+$ argocd login argocd.example.com --username admin --password yourpassword
+$ argocd app list       /  $ kubectl get applications -n argocd
+
 
 
 #	Create a new ArgoCD project from the CLI:
 $ argocd login <ARGO-SERVER-URL>
 $ argocd app create weatherk8s --repo https://github.com/Zivgl66/k8s-weatherapp --path ./ --dest-namespace default --dest-server https://kubernetes.default.svc --directory-recurse
 application 'weatherk8s' created
+
+
+# 	Create a new user:
+$    kubectl edit configmap argocd-rbac-cm -n argocd
+#	Add this policy the configmap:
+   data:
+     policy.csv: |
+       p, role:readonly, applications, get, */*, allow
+       p, role:readonly, logs, get, */*, allow
+     policy.default: role:readonly
+#	Add user and give it the roles:
+   data:
+     accounts.your-teammate: apiKey, login
+#	Change the teammate's password:
+   argocd account update-password --account your-teammate --current-password <current-admin-password> --new-password <new-teammate-password>
+
