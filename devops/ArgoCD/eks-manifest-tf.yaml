@@ -1,0 +1,56 @@
+name: Build, Test, and Deploy WeatherApp
+
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+
+jobs:
+  terraform-apply:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -check
+        continue-on-error: true
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"
+
+      - name: Terraform Init
+        id: init
+        working-directory: "./eks/terraform"
+        run: terraform init
+
+      - name: Terraform Validate
+        id: validate
+        working-directory: "./eks/terraform"
+        run: terraform validate -no-color
+
+      - name: Terraform Plan
+        id: plan
+        working-directory: "./eks/terraform"
+        run: terraform plan -var="docker_image_version=${{ steps.new_version.outputs.new_version }}" -no-color
+        continue-on-error: true
+
+      - name: Terraform Apply
+        id: apply
+        working-directory: "./eks/terraform"
+        run: |
+          # terraform taint aws_instance.instance
+          terraform apply -var="docker_image_version=${{ steps.new_version.outputs.new_version }}" -auto-approve
+
+      - name: Deploy to eks-cluster
+        env:
+          IMAGE_TAG: ${{ env.DOCKER_REPO }}:${{ env.IMAGE_NAME }}-${{ steps.new_version.outputs.new_version }}
+        run: |
+          kubectl apply -f eks-manifest.yml

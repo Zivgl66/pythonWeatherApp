@@ -3,7 +3,7 @@ import bcrypt
 import os
 
 # client = MongoClient(os.environ.get("DB_URI"), connect=False)
-client = MongoClient("mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.0.0"
+client = MongoClient("mongodb://192.168.49.1:27017"
                     , connect=False)
 db = client.WeatherApp
 users = db.users
@@ -23,7 +23,8 @@ def add_user_to_db(username, password):
             salt = bcrypt.gensalt()
 
             # Hashing the password 
-            hash = bcrypt.hashpw(bytes, salt)
+            # hash = bcrypt.hashpw(bytes, salt)
+            hash = bcrypt.hashpw(password, salt)
             user = {'username': username, 'password': hash}
             user_id = users.insert_one(user).inserted_id
             # print(user_id)
@@ -31,6 +32,7 @@ def add_user_to_db(username, password):
             return True
     else:
         return False
+
 
 
 def login_user_from_db(username, password):
@@ -41,5 +43,6 @@ def login_user_from_db(username, password):
         print(user)
         user_bytes = password.encode('utf-8')
         if bcrypt.checkpw(user_bytes, user['password']):
+        # if bcrypt.checkpw(password, user['password']):
             return True
     return False

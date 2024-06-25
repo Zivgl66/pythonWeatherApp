@@ -20,9 +20,9 @@ application 'weatherk8s' created
 
 
 # 	Create a new user:
-$    kubectl edit configmap argocd-rbac-cm -n argocd
+$    kubectl edit configmap argocd-rbac-cm -n argocd	
 #	Add this policy the configmap:
-   data:
+   data:	
      policy.csv: |
        p, role:readonly, applications, get, */*, allow
        p, role:readonly, logs, get, */*, allow
@@ -33,3 +33,34 @@ $    kubectl edit configmap argocd-rbac-cm -n argocd
 #	Change the teammate's password:
    argocd account update-password --account your-teammate --current-password <current-admin-password> --new-password <new-teammate-password>
 
+
+
+#	Helm command to install argocd on the eks cluster:
+$ helm repo add argo https://argoproj.github.io/argo-helm
+$ helm repo update
+$ kubectl create namespace argocd
+$ helm install argocd argo/argo-cd --namespace argocd
+$ kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+$ pass=kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+$ 
+
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: weatherapp
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/Zivgl66/k8s-weatherapp
+    targetRevision: HEAD
+    path: manifest
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: myapp
+  syncPolicy:
+   automated:
+    prune: true
+    selfHeal: true
