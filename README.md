@@ -1,2 +1,0 @@
-# weatherapp_python
-# pythonWeatherApp
